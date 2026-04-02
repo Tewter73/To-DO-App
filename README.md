@@ -17,6 +17,17 @@
 
 ---
 
+## 🧭 โครงสร้างโปรเจกต์ (Project Structure)
+
+```text
+To-Do App/
+└─ my-todo-app/
+   ├─ todo-frontend/   # React + Vite + MUI (UI/Mockup)
+   └─ todo-backend/    # ASP.NET Core Web API + EF Core + MariaDB
+```
+
+---
+
 ## 🛠️ สิ่งที่ต้องเตรียมพร้อม (Prerequisites)
 
 ก่อนเริ่มงาน ติดตั้งเครื่องมือต่อไปนี้ให้ครบ:
@@ -129,7 +140,10 @@ cd ..
 
 โปรเจกต์นี้ใช้ **`appsettings.json`** (ไม่ใช้ไฟล์ `.env` แบบ Node)
 
-แก้ไขที่ `todo-backend/appsettings.json`:
+แก้ไขการตั้งค่าได้ที่:
+
+- `todo-backend/appsettings.json` (ค่าทั่วไป)
+- `todo-backend/appsettings.Development.json` (ค่าสำหรับเครื่องพัฒนา)
 
 | ส่วน | สิ่งที่ต้องปรับ |
 |------|------------------|
@@ -138,6 +152,20 @@ cd ..
 | `Jwt:Issuer` / `Jwt:Audience` | ปกติใช้ค่าเดิมได้ถ้า Frontend เรียก API เครื่องเดียวกัน |
 
 > **ความปลอดภัย:** อย่า commit รหัสผ่านฐานข้อมูลหรือ JWT secret จริงลงที่สาธารณะ — ใช้ User Secrets หรือตัวแปรสภาพแวดล้อมบนเซิร์ฟเวอร์จริง
+
+---
+
+## 🔑 หมายเหตุด้าน JWT (อัปเดตตามโค้ดปัจจุบัน)
+
+การออก token จาก `POST /api/tokens` มีพฤติกรรมหลักดังนี้:
+
+- ใช้ claim `unique_name` เพื่อเก็บ `userId`
+- ใส่ claim `role` ค่าเริ่มต้นเป็น `user`
+- ใส่ `iat` (issued at) ตามเวลา UTC ปัจจุบัน
+- ตั้ง `notBefore` (`nbf`) เป็นเวลา UTC ปัจจุบัน
+- ตั้ง `expires` (`exp`) เป็นเวลาหมดอายุ **3 ชั่วโมง**
+
+> ฝั่ง API ยังคงตรวจสอบอายุ token และลายเซ็นตาม `TokenValidationParameters` ใน `Program.cs`
 
 ---
 
@@ -193,6 +221,17 @@ npm run dev
 2. รัน **Backend** ก่อน  
 3. รัน **Frontend**  
 4. ทดสอบ API ผ่าน Swagger หรือใช้แอปหน้าเว็บตาม flow ของทีม
+
+---
+
+## 🔌 สถานะการเชื่อมต่อ Frontend ↔ Backend
+
+- ปัจจุบัน `todo-frontend` ยังเป็น **Mock UI** เป็นหลัก
+- หน้า `Login` ยังใช้ `localStorage` flag (`todo_authed`) เพื่อจำลองการล็อกอิน
+- หน้า `Main` ยังใช้ข้อมูลตัวอย่างใน state (ยังไม่ดึง `GET /api/activities` จริง)
+- ค่า `VITE_API_BASE_URL` ถูกเตรียมไว้แล้วใน `.env.example` เพื่อใช้ตอนเชื่อม API จริง
+
+> แนะนำลำดับการต่อยอด: Login (`POST /api/tokens`) → เก็บ JWT → ส่ง `Authorization: Bearer <token>` ตอนเรียก Activities API
 
 ---
 
