@@ -486,3 +486,4 @@ $RECYCLE.BIN/
 # ASP.NET Core app settings (sensitive/local config)
 appsettings.Development.json
 appsettings.json
+my-todo-app/todo-backend/appsettings.json
