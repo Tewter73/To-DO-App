@@ -2897,11 +2897,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\NEWROG\\TodoBackend\\TodoBackend.csproj",
+      "projectUniqueName": "c:\\Users\\NEWROG\\Documents\\GitHub\\To-Do App\\my-todo-app\\todo-backend\\TodoBackend.csproj",
       "projectName": "TodoBackend",
-      "projectPath": "C:\\Users\\NEWROG\\TodoBackend\\TodoBackend.csproj",
+      "projectPath": "c:\\Users\\NEWROG\\Documents\\GitHub\\To-Do App\\my-todo-app\\todo-backend\\TodoBackend.csproj",
       "packagesPath": "C:\\Users\\NEWROG\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\NEWROG\\TodoBackend\\obj\\",
+      "outputPath": "c:\\Users\\NEWROG\\Documents\\GitHub\\To-Do App\\my-todo-app\\todo-backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\NEWROG\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -1,3 +1,8 @@
+/**
+ * App.jsx — กำหนดเส้นทาง (routing) และผู้ให้บริการรอบแอป
+ * What: ใช้ React Router แยกหน้า Login / Main / Credit และห่อด้วย MUI + dayjs สำหรับตัวเลือกวันที่
+ * Why: รวม layout และการป้องกันหน้าที่ต้องล็อกอินไว้ที่เดียว ลดการซ้ำในแต่ละหน้า
+ */
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { CssBaseline } from '@mui/material'
@@ -9,10 +14,12 @@ import { LoginPage } from './pages/LoginPage.jsx'
 import { MainPage } from './pages/MainPage.jsx'
 import { CreditPage } from './pages/CreditPage.jsx'
 
+// สถานะล็อกอินแบบ mock: เก็บ flag ใน localStorage (ยังไม่เชื่อม API จริงในขั้นตอนนี้)
 function isAuthed() {
   return localStorage.getItem('todo_authed') === '1'
 }
 
+// ถ้ายังไม่ล็อกอิน ให้ redirect ไป /login และเก็บ path เดิมไว้ใน state (ขยายต่อได้เมื่อเชื่อม JWT)
 function RequireAuth({ children }) {
   const location = useLocation()
 

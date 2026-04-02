@@ -1,5 +1,6 @@
 namespace TodoBackend.Dtos;
 
+// DTO สำหรับ POST /api/users/register — ข้อมูลลงทะเบียนผู้ใช้ (ไม่ส่งกลับรหัสผ่านใน response)
 public sealed class UserRegisterRequest
 {
     public string NationalId { get; set; } = null!;

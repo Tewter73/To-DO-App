@@ -1,3 +1,8 @@
+/**
+ * CreditPage.jsx — หน้าแสดงรายชื่อผู้จัดทำโปรเจกต์
+ * What: อ่านข้อมูลจากอาร์เรย์คงที่แล้วเรนเดอร์เป็นรายการ
+ * Why: แยกข้อมูลทีมออกจาก logic อื่น แก้ไขรายชื่อได้ที่ตัวแปร people
+ */
 import { Box, Card, CardContent, Container, Divider, Stack, Typography } from '@mui/material'
 
 const people = [

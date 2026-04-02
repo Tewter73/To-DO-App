@@ -1,3 +1,8 @@
+/**
+ * AppShell.jsx — โครงหน้าร่วม (AppBar + Drawer + พื้นที่เนื้อหา)
+ * What: เมนูนำทางไป Main/Credit และออกจากระบบ; แสดงชื่อหน้าตาม path
+ * Why: หน้าที่อยู่ภายใต้ Route เดียวกันใช้ layout เดียวกัน โดยเนื้อหาแทรกผ่าน <Outlet />
+ */
 import { useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
@@ -31,11 +36,13 @@ export function AppShell() {
     return 'Login'
   }, [location.pathname])
 
+  // ปิด Drawer หลังเลือกเมนู — UX บนมือถือไม่ให้เมนูบังหน้าจอ
   const go = (path) => {
     setOpen(false)
     navigate(path)
   }
 
+  // ล้างสถานะ mock แล้วกลับหน้า Login — หากมี token จริงควรลบจาก storage เช่นกัน
   const signOut = () => {
     localStorage.removeItem('todo_authed')
     go('/login')

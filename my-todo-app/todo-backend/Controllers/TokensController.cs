@@ -11,6 +11,9 @@ using TodoBackend.Models;
 
 namespace TodoBackend.Controllers;
 
+// TokensController — ออก JWT หลังตรวจสอบรหัสผ่าน (ล็อกอิน)
+// What: รับเลขประจำตัวประชาชน + รหัสผ่าน คืน token และเวลาหมดอายุ
+// Why: ฝั่งไคลเอนต์ใช้ token แนบ header เพื่อเรียก API ที่มี [Authorize] โดยไม่ส่งรหัสผ่านซ้ำ
 [ApiController]
 [Route("api/[controller]")]
 public sealed class TokensController : ControllerBase
@@ -38,6 +41,10 @@ public sealed class TokensController : ControllerBase
             return Unauthorized();
         }
 
+        // ขั้นตอนตรวจรหัสผ่าน:
+        // 1) แปลง salt และแฮชที่เก็บจาก Base64 — หากข้อมูลในฐานเสียหายหรือไม่ใช่ Base64 ที่ถูกต้อง ปฏิเสธ
+        // 2) คำนวณแฮชจากรหัสผ่านที่ส่งมา ด้วยพารามิเตอร์เดียวกับตอนลงทะเบียน
+        // 3) เปรียบเทียบด้วย FixedTimeEquals — ลดความเสี่ยง timing attack
         byte[] saltBytes;
         try
         {
@@ -80,6 +87,7 @@ public sealed class TokensController : ControllerBase
 
         var expires = DateTime.UtcNow.AddHours(3);
 
+        // ClaimTypes.Name เก็บ user.Id — ActivitiesController อ่านค่านี้เป็นเจ้าของรายการ
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, user.Id.ToString())

@@ -1,3 +1,8 @@
+/**
+ * LoginPage.jsx — หน้าเข้าสู่ระบบ (mock)
+ * What: ฟอร์มเลขประจำตัวประชาชนและรหัสผ่าน
+ * Why: ตั้ง flag ใน localStorage แล้วไป /main — เมื่อเชื่อม backend ควรเรียก POST /api/tokens แล้วเก็บ JWT แทน
+ */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'

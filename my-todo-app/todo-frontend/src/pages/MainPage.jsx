@@ -1,3 +1,8 @@
+/**
+ * MainPage.jsx — หน้ารายการ To-Do (ฝั่ง UI เป็น Mockup)
+ * What: แสดงรายการตัวอย่างใน state, แก้ไขผ่าน Dialog, ลบรายการ, แจ้งเตือนด้วย toast
+ * Why: ใช้เป็นต้นแบบ UX ก่อนเชื่อมกับ API ฝั่ง backend (กิจกรรมจริงจะมาจาก GET /api/activities)
+ */
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
@@ -27,6 +32,7 @@ function formatDateTime(value) {
 }
 
 export function MainPage() {
+  // ข้อมูลเริ่มต้นคำนวณครั้งเดียว — ลดการสร้างอาร์เรย์ใหม่ทุก render
   const initialTodos = useMemo(
     () => [
       {
@@ -58,6 +64,7 @@ export function MainPage() {
     toast.error('ลบสำเร็จ')
   }
 
+  // เปิด Dialog แก้ไข: คัดลอกข้อมูลรายการที่เลือกเข้า state ชั่วคราว
   const handleEdit = (task) => {
     setEditTaskId(task.id)
     setEditTask({ title: task.title, datetime: task.datetime })
@@ -70,6 +77,7 @@ export function MainPage() {
   }
 
   const saveEdit = () => {
+    // อัปเดตเฉพาะรายการที่ id ตรงกับ editTaskId คง id เดิมไว้
     if (editTaskId) {
       setTodos((prev) =>
         prev.map((t) =>
