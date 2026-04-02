@@ -86,17 +86,22 @@ public sealed class TokensController : ControllerBase
         var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         var expires = DateTime.UtcNow.AddHours(3);
+        var nowUtc = DateTime.UtcNow;
 
-        // ClaimTypes.Name เก็บ user.Id — ActivitiesController อ่านค่านี้เป็นเจ้าของรายการ
+        // หมายเหตุ: ใช้ `unique_name` สำหรับ user id เพื่อให้เข้ากับข้อกำหนด claim ใหม่
+        var issuedAtUnixSeconds = new DateTimeOffset(nowUtc).ToUnixTimeSeconds();
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, user.Id.ToString())
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
+            new Claim("role", "user"),
+            new Claim(JwtRegisteredClaimNames.Iat, issuedAtUnixSeconds.ToString(), ClaimValueTypes.Integer64)
         };
 
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
             claims: claims,
+            notBefore: nowUtc,
             expires: expires,
             signingCredentials: credentials);
 
