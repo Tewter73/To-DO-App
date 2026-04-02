@@ -1,0 +1,12 @@
+$kind: http-request
+name: 6. ตรวจสอบลิสต์งานอีกรอบ
+url: http://localhost:5555/api/activities
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEzIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzUxMzM4OTUsIm5iZiI6MTc3NTEzMzg5NSwiZXhwIjoxNzc1MTQ0Njk1LCJpc3MiOiJUb2RvQmFja2VuZCIsImF1ZCI6IlRvZG9CYWNrZW5kIn0.YO3O4x65m51C7BCC2D4p7yWeQfLk_5XZQQQlgPs41UY
+order: 4241520713805957

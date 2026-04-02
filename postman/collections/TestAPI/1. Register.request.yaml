@@ -1,0 +1,20 @@
+$kind: http-request
+name: 0. Register
+url: http://localhost:5555/api/users/register
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nationalId\": \"1179900459567\",\r
+
+    \  \"title\": \"Mr.\",\r
+
+    \  \"firstName\": \"Testnew\",\r
+
+    \  \"lastName\": \"Goodapp\",\r
+
+    \  \"password\": \"mysecretpassword\"\r
+
+    }"
+order: 1775133374502

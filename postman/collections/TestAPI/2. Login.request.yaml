@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:5555/api/tokens
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nationalId\": \"1179900459567\",\r
+
+    \  \"password\": \"mysecretpassword\"\r
+
+    }"
+order: 1961019349443243
