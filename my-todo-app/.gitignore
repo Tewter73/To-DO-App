@@ -1,0 +1,8 @@
+# ละเว้น Package ของทั้งสองฝั่ง
+**/node_modules/
+**/venv/
+**/.env
+
+# ละเว้นไฟล์ Build
+**/dist/
+**/build/
