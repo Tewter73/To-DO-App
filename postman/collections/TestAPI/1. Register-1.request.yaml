@@ -1,5 +1,5 @@
 $kind: http-request
-name: 0. Register
+name: 1. Register
 url: http://localhost:5555/api/users/register
 method: POST
 body:
