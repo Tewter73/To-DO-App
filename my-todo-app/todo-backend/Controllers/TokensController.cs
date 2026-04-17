@@ -110,7 +110,8 @@ public sealed class TokensController : ControllerBase
         return Ok(new
         {
             token = tokenString,
-            expiresAtUtc = expires
+            expiresAtUtc = expires,
+            firstName = user.FirstName
         });
     }
 }

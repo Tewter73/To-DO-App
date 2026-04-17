@@ -17,7 +17,7 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { api } from '../lib/api.js'
-import { setAuthToken } from '../lib/auth.js'
+import { setAuthToken, setFirstName } from '../lib/auth.js'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -37,6 +37,7 @@ export function LoginPage() {
       })
 
       setAuthToken(data.token)
+      setFirstName(data.firstName)
       toast.success('เข้าสู่ระบบสำเร็จ')
       navigate('/main')
     } catch (error) {

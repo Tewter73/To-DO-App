@@ -86,11 +86,11 @@ export function MainPage() {
     }
 
     try {
-      const { data } = await api.post('/api/activities', {
+      await api.post('/api/activities', {
         name: newTaskName.trim(),
         when: newTaskWhen.toISOString(),
       })
-      setTodos((prev) => [...prev, data])
+      await loadActivities()
       setNewTaskName('')
       setNewTaskWhen(dayjs())
       toast.success('เพิ่มงานสำเร็จ')
@@ -137,11 +137,11 @@ export function MainPage() {
     }
 
     try {
-      const { data } = await api.put(`/api/activities/${editTaskId}`, {
+      await api.put(`/api/activities/${editTaskId}`, {
         name: editTask.title.trim(),
         when: editTask.datetime.toISOString(),
       })
-      setTodos((prev) => prev.map((item) => (item.id === editTaskId ? data : item)))
+      await loadActivities()
       setIsEditDialogOpen(false)
       setEditTaskId(null)
       toast.success('อัปเดตงานสำเร็จ')

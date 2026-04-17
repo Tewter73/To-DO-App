@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { slide as BurgerMenu } from 'react-burger-menu'
-import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import InfoIcon from '@mui/icons-material/Info'
@@ -9,7 +9,8 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import LoginIcon from '@mui/icons-material/Login'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import KeyIcon from '@mui/icons-material/Key'
-import { clearAuthToken, isAuthed } from '../lib/auth.js'
+import PersonIcon from '@mui/icons-material/Person'
+import { clearAuthToken, getFirstName, isAuthed } from '../lib/auth.js'
 
 export function AppShell() {
   const navigate = useNavigate()
@@ -17,6 +18,8 @@ export function AppShell() {
   const [open, setOpen] = useState(false)
 
   const authed = isAuthed()
+  const firstName = getFirstName()
+  const firstNameInitial = firstName.trim().charAt(0).toUpperCase()
   const isAuthPage =
     location.pathname === '/login' ||
     location.pathname === '/register' ||
@@ -74,6 +77,16 @@ export function AppShell() {
           <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
             {title}
           </Typography>
+          {authed ? (
+            <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {firstNameInitial || <PersonIcon fontSize="small" />}
+              </Avatar>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {firstName || 'User'}
+              </Typography>
+            </Box>
+          ) : null}
           {!authed && !isAuthPage ? (
             <Button color="inherit" sx={{ ml: 'auto' }} onClick={() => go('/login')}>
               Login

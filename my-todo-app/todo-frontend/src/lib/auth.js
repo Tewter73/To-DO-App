@@ -1,6 +1,7 @@
 import { Cookies } from 'react-cookie'
 
 const TOKEN_KEY = 'todo_token'
+const FIRST_NAME_KEY = 'firstName'
 const cookies = new Cookies()
 
 export function getAuthToken() {
@@ -18,10 +19,24 @@ export function setAuthToken(token) {
 
 export function clearAuthToken() {
   localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(FIRST_NAME_KEY)
   cookies.remove(TOKEN_KEY, { path: '/' })
 }
 
 export function isAuthed() {
   return Boolean(getAuthToken())
+}
+
+export function setFirstName(firstName) {
+  if (!firstName) {
+    localStorage.removeItem(FIRST_NAME_KEY)
+    return
+  }
+
+  localStorage.setItem(FIRST_NAME_KEY, firstName)
+}
+
+export function getFirstName() {
+  return localStorage.getItem(FIRST_NAME_KEY) ?? ''
 }
 
