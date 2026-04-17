@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import * as SecureStore from 'expo-secure-store'
-import { NavigationContainer } from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer'
 import SignInScreen from '../screens/SignIn'
@@ -12,6 +12,14 @@ import CreditScreen from '../screens/Credit'
 
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#f5f7fb',
+  },
+}
 
 function CustomDrawerContent(props) {
   const { onSignOut, firstName } = props
@@ -73,14 +81,14 @@ export default function AppNavigator() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f7fb' }}>
+        <ActivityIndicator size="large" color="#1976d2" />
       </View>
     )
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthed ? (
           <Stack.Screen name="App">
