@@ -1,9 +1,5 @@
-/**
- * MainPage.jsx — หน้ารายการ To-Do (ฝั่ง UI เป็น Mockup)
- * What: แสดงรายการตัวอย่างใน state, แก้ไขผ่าน Dialog, ลบรายการ, แจ้งเตือนด้วย toast
- * Why: ใช้เป็นต้นแบบ UX ก่อนเชื่อมกับ API ฝั่ง backend (กิจกรรมจริงจะมาจาก GET /api/activities)
- */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
 import {
@@ -17,7 +13,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
+  Paper,
   Stack,
   TextField,
   Typography,
@@ -25,6 +23,9 @@ import {
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import AddIcon from '@mui/icons-material/Add'
+import { api } from '../lib/api.js'
+import { clearAuthToken } from '../lib/auth.js'
 
 function formatDateTime(value) {
   if (!value) return ''
@@ -32,39 +33,92 @@ function formatDateTime(value) {
 }
 
 export function MainPage() {
-  // ข้อมูลเริ่มต้นคำนวณครั้งเดียว — ลดการสร้างอาร์เรย์ใหม่ทุก render
-  const initialTodos = useMemo(
-    () => [
-      {
-        id: 't1',
-        title: 'ส่งงานวิชา Frontend',
-        datetime: dayjs('2026-04-01T21:00'),
-      },
-      {
-        id: 't2',
-        title: 'อ่านสรุปบทเรียน React Router',
-        datetime: dayjs('2026-04-02T10:30'),
-      },
-      {
-        id: 't3',
-        title: 'ทำความสะอาดห้อง + จัดโต๊ะทำงาน',
-        datetime: dayjs('2026-04-03T18:00'),
-      },
-    ],
-    [],
-  )
-
-  const [todos, setTodos] = useState(initialTodos)
+  const navigate = useNavigate()
+  const [todos, setTodos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [newTaskName, setNewTaskName] = useState('')
+  const [newTaskWhen, setNewTaskWhen] = useState(dayjs())
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editTask, setEditTask] = useState({ title: '', datetime: null })
   const [editTaskId, setEditTaskId] = useState(null)
 
-  const onDelete = (id) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id))
-    toast.error('ลบสำเร็จ')
+  const normalizedTodos = useMemo(
+    () =>
+      todos.map((item) => ({
+        id: item.id,
+        title: item.name,
+        datetime: dayjs(item.when),
+      })),
+    [todos],
+  )
+
+  const handleAuthError = () => {
+    clearAuthToken()
+    toast.error('Token หมดอายุ กรุณาเข้าสู่ระบบใหม่')
+    navigate('/login')
   }
 
-  // เปิด Dialog แก้ไข: คัดลอกข้อมูลรายการที่เลือกเข้า state ชั่วคราว
+  const loadActivities = async () => {
+    try {
+      setLoading(true)
+      const { data } = await api.get('/api/activities')
+      setTodos(data)
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleAuthError()
+        return
+      }
+
+      toast.error('ไม่สามารถดึงรายการงานได้')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadActivities()
+  }, [])
+
+  const onCreate = async () => {
+    if (!newTaskName.trim()) {
+      toast.error('กรุณาระบุชื่องาน')
+      return
+    }
+
+    try {
+      await api.post('/api/activities', {
+        name: newTaskName.trim(),
+        when: newTaskWhen.toISOString(),
+      })
+      await loadActivities()
+      setNewTaskName('')
+      setNewTaskWhen(dayjs())
+      toast.success('เพิ่มงานสำเร็จ')
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleAuthError()
+        return
+      }
+
+      toast.error('ไม่สามารถเพิ่มงานได้')
+    }
+  }
+
+  const onDelete = async (id) => {
+    try {
+      await api.delete(`/api/activities/${id}`)
+      setTodos((prev) => prev.filter((t) => t.id !== id))
+      toast.success('ลบงานสำเร็จ')
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleAuthError()
+        return
+      }
+
+      toast.error('ไม่สามารถลบงานได้')
+    }
+  }
+
   const handleEdit = (task) => {
     setEditTaskId(task.id)
     setEditTask({ title: task.title, datetime: task.datetime })
@@ -76,20 +130,29 @@ export function MainPage() {
     setEditTaskId(null)
   }
 
-  const saveEdit = () => {
-    // อัปเดตเฉพาะรายการที่ id ตรงกับ editTaskId คง id เดิมไว้
-    if (editTaskId) {
-      setTodos((prev) =>
-        prev.map((t) =>
-          t.id === editTaskId
-            ? { ...t, title: editTask.title, datetime: editTask.datetime }
-            : t,
-        ),
-      )
+  const saveEdit = async () => {
+    if (!editTaskId || !editTask.title.trim() || !editTask.datetime) {
+      toast.error('ข้อมูลที่จะแก้ไขไม่ครบถ้วน')
+      return
     }
-    setIsEditDialogOpen(false)
-    setEditTaskId(null)
-    toast.success('บันทึกข้อมูลเรียบร้อย')
+
+    try {
+      await api.put(`/api/activities/${editTaskId}`, {
+        name: editTask.title.trim(),
+        when: editTask.datetime.toISOString(),
+      })
+      await loadActivities()
+      setIsEditDialogOpen(false)
+      setEditTaskId(null)
+      toast.success('อัปเดตงานสำเร็จ')
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleAuthError()
+        return
+      }
+
+      toast.error('ไม่สามารถแก้ไขงานได้')
+    }
   }
 
   return (
@@ -101,24 +164,56 @@ export function MainPage() {
               รายการ To-Do
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              (Mockup) มี 3 รายการตัวอย่าง พร้อมปุ่ม Edit/Delete
+              เชื่อมข้อมูลจริงจาก API: เพิ่ม แก้ไข ลบ และโหลดจากฐานข้อมูล
             </Typography>
           </Box>
 
+          <Paper sx={{ p: 2 }}>
+            <Stack spacing={1.5}>
+              <Typography sx={{ fontWeight: 700 }}>เพิ่มงานใหม่</Typography>
+              <TextField
+                label="Task Name"
+                value={newTaskName}
+                onChange={(event) => setNewTaskName(event.target.value)}
+                fullWidth
+              />
+              <MobileDateTimePicker
+                label="วันที่และเวลา"
+                value={newTaskWhen}
+                onChange={(value) => setNewTaskWhen(value ?? dayjs())}
+                format="DD/MM/YYYY HH:mm"
+                slotProps={{ textField: { fullWidth: true } }}
+              />
+              <Button variant="contained" startIcon={<AddIcon />} onClick={onCreate}>
+                เพิ่มงาน
+              </Button>
+            </Stack>
+          </Paper>
+
+          <Divider />
+
           <Stack spacing={2}>
-            {todos.length === 0 ? (
+            {!loading && normalizedTodos.length === 0 ? (
               <Card variant="outlined">
                 <CardContent>
                   <Typography sx={{ fontWeight: 700 }}>
                     ไม่มีรายการคงเหลือ
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    ลองรีเฟรชหน้าเพื่อกลับไปเป็นรายการตัวอย่าง
+                    ลองเพิ่มงานแรกของคุณด้านบน
                   </Typography>
                 </CardContent>
               </Card>
+            ) : null}
+
+            {loading ? (
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography>กำลังโหลดข้อมูล...</Typography>
+                </CardContent>
+              </Card>
             ) : (
-              todos.map((t) => (
+              normalizedTodos.map((t) => (
                 <Card key={t.id} variant="outlined">
                   <CardHeader
                     title={
@@ -168,6 +263,7 @@ export function MainPage() {
             onChange={(e) =>
               setEditTask((prev) => ({ ...prev, title: e.target.value }))
             }
+            required
           />
           <MobileDateTimePicker
             label="วันเวลาที่บันทึก"

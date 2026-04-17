@@ -85,5 +85,47 @@ public sealed class UsersController : ControllerBase
 
         return Created($"/api/users/{user.Id}", body);
     }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.NationalId) ||
+            string.IsNullOrWhiteSpace(request.FirstName) ||
+            string.IsNullOrWhiteSpace(request.LastName) ||
+            string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest();
+        }
+
+        var user = await _db.User.SingleOrDefaultAsync(x =>
+            x.NationalId == request.NationalId &&
+            x.FirstName == request.FirstName &&
+            x.LastName == request.LastName);
+
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        var saltBytes = RandomNumberGenerator.GetBytes(16);
+        var newSalt = Convert.ToBase64String(saltBytes);
+        var hashBytes = KeyDerivation.Pbkdf2(
+            password: request.NewPassword,
+            salt: saltBytes,
+            prf: KeyDerivationPrf.HMACSHA256,
+            iterationCount: 100_000,
+            numBytesRequested: 32);
+        var newHash = Convert.ToBase64String(hashBytes);
+
+        user.Salt = newSalt;
+        user.HashedPassword = newHash;
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
 
