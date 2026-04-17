@@ -2,7 +2,14 @@
 **/node_modules/
 **/venv/
 **/.env
+**/.env.local
+**/.env.*.local
 
 # ละเว้นไฟล์ Build
 **/dist/
 **/build/
+**/bin/
+**/obj/
+
+# ละเว้น config ที่มีความลับ (ให้ใช้ตัวอย่างไฟล์แทน)
+todo-backend/appsettings.json

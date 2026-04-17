@@ -487,3 +487,4 @@ $RECYCLE.BIN/
 appsettings.Development.json
 appsettings.json
 my-todo-app/todo-backend/appsettings.json
+my-todo-app/todo-backend/bin/Debug/net8.0/appsettings.json
