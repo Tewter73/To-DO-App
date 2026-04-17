@@ -1,10 +1,5 @@
-/**
- * LoginPage.jsx — หน้าเข้าสู่ระบบ (mock)
- * What: ฟอร์มเลขประจำตัวประชาชนและรหัสผ่าน
- * Why: ตั้ง flag ใน localStorage แล้วไป /main — เมื่อเชื่อม backend ควรเรียก POST /api/tokens แล้วเก็บ JWT แทน
- */
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import {
   Box,
@@ -12,21 +7,48 @@ import {
   Card,
   CardContent,
   Container,
+  IconButton,
+  InputAdornment,
+  Link,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import { api } from '../lib/api.js'
+import { setAuthToken } from '../lib/auth.js'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const [nationalId, setNationalId] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
-    localStorage.setItem('todo_authed', '1')
-    toast.success('เข้าสู่ระบบสำเร็จ')
-    navigate('/main')
+
+    try {
+      setIsSubmitting(true)
+      const { data } = await api.post('/api/tokens', {
+        nationalId,
+        password,
+      })
+
+      setAuthToken(data.token)
+      toast.success('เข้าสู่ระบบสำเร็จ')
+      navigate('/main')
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        toast.error('NationalId หรือ Password ไม่ถูกต้อง')
+        return
+      }
+
+      toast.error('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -61,12 +83,27 @@ export function LoginPage() {
               />
               <TextField
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 fullWidth
                 required
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
 
               <Button
@@ -74,9 +111,19 @@ export function LoginPage() {
                 variant="contained"
                 size="large"
                 fullWidth
+                disabled={isSubmitting}
               >
-                Submit
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
               </Button>
+
+              <Stack direction="row" justifyContent="space-between">
+                <Link component={RouterLink} to="/register" underline="hover">
+                  สมัครสมาชิก
+                </Link>
+                <Link component={RouterLink} to="/forgot-password" underline="hover">
+                  ลืมรหัสผ่าน
+                </Link>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
