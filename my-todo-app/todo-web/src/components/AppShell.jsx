@@ -77,7 +77,7 @@ export function AppShell() {
           <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>
             {title}
           </Typography>
-          {authed ? (
+          {authed && !isAuthPage ? (
             <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
               <Avatar sx={{ width: 32, height: 32 }}>
                 {firstNameInitial || <PersonIcon fontSize="small" />}
