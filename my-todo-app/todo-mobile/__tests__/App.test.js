@@ -36,7 +36,7 @@ describe('Mobile validation', () => {
     jest.clearAllMocks()
   })
 
-  test('shows HelperText and disables submit on invalid Login input', () => {
+  test('shows LabelError on invalid Login input and prevents submit', () => {
     const { getByText, getAllByTestId, getByRole } = renderWithProvider(
       <SignInScreen onSignInSuccess={jest.fn()} navigation={{ navigate: jest.fn() }} />,
     )
@@ -47,24 +47,32 @@ describe('Mobile validation', () => {
 
     expect(getByText('เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก')).toBeTruthy()
     expect(getByText('รหัสผ่านต้องอย่างน้อย 8 ตัว และห้ามมีช่องว่าง')).toBeTruthy()
-    expect(getByRole('button', { name: 'Submit' })).toBeDisabled()
+    
+    // Simulate submit
+    fireEvent.press(getByRole('button', { name: 'Submit' }))
+    // api should not be called
+    expect(api.post).not.toHaveBeenCalled()
   })
 
-  test('shows HelperText and disables submit on invalid Register input', () => {
+  test('shows LabelError on invalid Register input and prevents submit', () => {
     const { getByText, getAllByTestId, getByRole } = renderWithProvider(
       <RegisterScreen navigation={{ goBack: jest.fn() }} />,
     )
 
     const inputs = getAllByTestId('text-input-outlined')
     fireEvent.changeText(inputs[0], '123')
-    fireEvent.changeText(inputs[2], 'A')
-    fireEvent.changeText(inputs[3], 'B')
-    fireEvent.changeText(inputs[4], '123 45')
+    fireEvent.changeText(inputs[1], 'A')
+    fireEvent.changeText(inputs[2], 'B')
+    fireEvent.changeText(inputs[3], '123 45')
 
     expect(getByText('เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก')).toBeTruthy()
     expect(getByText('ชื่อต้องมีอย่างน้อย 2 ตัวอักษร')).toBeTruthy()
     expect(getByText('นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร')).toBeTruthy()
-    expect(getByRole('button', { name: 'สมัครสมาชิก' })).toBeDisabled()
+    
+    // Simulate submit
+    fireEvent.press(getByRole('button', { name: 'สมัครสมาชิก' }))
+    // api should not be called
+    expect(api.post).not.toHaveBeenCalled()
   })
 })
 
