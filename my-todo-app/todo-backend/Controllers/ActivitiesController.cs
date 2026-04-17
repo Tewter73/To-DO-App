@@ -43,6 +43,21 @@ public sealed class ActivitiesController : ControllerBase
         return Ok(activities);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromRoute] uint id)
+    {
+        var userId = GetUserId();
+
+        // คืนข้อมูลได้เฉพาะ activity ของผู้ใช้ปัจจุบันเท่านั้น
+        var activity = await _db.Activity.SingleOrDefaultAsync(x => x.UserId == userId && x.Id == id);
+        if (activity is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(activity);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(Activity), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
