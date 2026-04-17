@@ -10,6 +10,7 @@ import { CssBaseline } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import toast from 'react-hot-toast'
+import 'dayjs/locale/th'
 
 import { AppShell } from './components/AppShell.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
@@ -73,7 +74,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th">
       <BrowserRouter>
         <CssBaseline />
         <Toaster

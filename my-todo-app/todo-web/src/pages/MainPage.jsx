@@ -26,10 +26,16 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import { api } from '../lib/api.js'
 import { clearAuthToken } from '../lib/auth.js'
+import { validateActivityName } from '../utils/validation.js'
 
 function formatDateTime(value) {
   if (!value) return ''
   return dayjs(value).format('DD/MM/YYYY HH:mm')
+}
+
+function toLocalApiDateTime(value) {
+  if (!value) return null
+  return dayjs(value).format('YYYY-MM-DDTHH:mm:ss')
 }
 
 export function MainPage() {
@@ -41,6 +47,8 @@ export function MainPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editTask, setEditTask] = useState({ title: '', datetime: null })
   const [editTaskId, setEditTaskId] = useState(null)
+  const newTaskNameError = validateActivityName(newTaskName)
+  const editTaskNameError = validateActivityName(editTask.title)
 
   const normalizedTodos = useMemo(
     () =>
@@ -80,15 +88,15 @@ export function MainPage() {
   }, [])
 
   const onCreate = async () => {
-    if (!newTaskName.trim()) {
-      toast.error('กรุณาระบุชื่องาน')
+    if (newTaskNameError) {
+      toast.error(newTaskNameError)
       return
     }
 
     try {
       await api.post('/api/activities', {
         name: newTaskName.trim(),
-        when: newTaskWhen.toISOString(),
+        when: toLocalApiDateTime(newTaskWhen),
       })
       await loadActivities()
       setNewTaskName('')
@@ -131,7 +139,7 @@ export function MainPage() {
   }
 
   const saveEdit = async () => {
-    if (!editTaskId || !editTask.title.trim() || !editTask.datetime) {
+    if (!editTaskId || !editTask.datetime || editTaskNameError) {
       toast.error('ข้อมูลที่จะแก้ไขไม่ครบถ้วน')
       return
     }
@@ -139,7 +147,7 @@ export function MainPage() {
     try {
       await api.put(`/api/activities/${editTaskId}`, {
         name: editTask.title.trim(),
-        when: editTask.datetime.toISOString(),
+        when: toLocalApiDateTime(editTask.datetime),
       })
       await loadActivities()
       setIsEditDialogOpen(false)
@@ -176,15 +184,23 @@ export function MainPage() {
                 value={newTaskName}
                 onChange={(event) => setNewTaskName(event.target.value)}
                 fullWidth
+                error={!!newTaskNameError}
+                helperText={newTaskNameError}
               />
               <MobileDateTimePicker
                 label="วันที่และเวลา"
                 value={newTaskWhen}
                 onChange={(value) => setNewTaskWhen(value ?? dayjs())}
+                ampm={false}
                 format="DD/MM/YYYY HH:mm"
                 slotProps={{ textField: { fullWidth: true } }}
               />
-              <Button variant="contained" startIcon={<AddIcon />} onClick={onCreate}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={onCreate}
+                disabled={!!newTaskNameError}
+              >
                 เพิ่มงาน
               </Button>
             </Stack>
@@ -264,6 +280,8 @@ export function MainPage() {
               setEditTask((prev) => ({ ...prev, title: e.target.value }))
             }
             required
+            error={!!editTaskNameError}
+            helperText={editTaskNameError}
           />
           <MobileDateTimePicker
             label="วันเวลาที่บันทึก"
@@ -271,6 +289,7 @@ export function MainPage() {
             onChange={(newValue) =>
               setEditTask((prev) => ({ ...prev, datetime: newValue }))
             }
+            ampm={false}
             format="DD/MM/YYYY HH:mm"
             slotProps={{
               textField: {
@@ -285,7 +304,7 @@ export function MainPage() {
           <Button variant="text" onClick={closeEditDialog}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={saveEdit}>
+          <Button variant="contained" onClick={saveEdit} disabled={!!editTaskNameError}>
             Save
           </Button>
         </DialogActions>

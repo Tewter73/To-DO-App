@@ -1,250 +1,94 @@
-# 📋 To-Do App — แอปพลิเคชันจัดการงาน (Full Stack)
+# To-DO-App Monorepo Guide
 
-> เอกสารนี้ใช้สำหรับการนำเสนอโปรเจกต์ต่ออาจารย์ และเป็นคู่มือให้สมาชิกในทีมติดตั้งและรันโปรเจกต์บนเครื่องตนเองได้อย่างเป็นลำดับขั้น
+เอกสารหลักสำหรับทีม เพื่อเปิดโปรเจกต์นี้บนเครื่องใหม่, ทำงานแบบแยก branch, และส่งต่อให้เพื่อนทำต่อได้ทันที
 
----
-
-## 📌 เกี่ยวกับโปรเจกต์ (Overview)
-
-โปรเจกต์นี้เป็น **แอปพลิเคชัน To-Do** แบ่งเป็น **สองส่วนหลัก**:
-
-| ส่วน | เทคโนโลยี | บทบาท |
-|------|------------|--------|
-| **Frontend** | React 19 + Vite 8 + Material UI (MUI) | หน้าเว็บสำหรับเข้าสู่ระบบ แสดงรายการงาน (Mockup) เมนูนำทาง และหน้า Credit |
-| **Backend** | ASP.NET Core 8 Web API + Entity Framework Core + MariaDB/MySQL | REST API สำหรับลงทะเบียน ออก JWT และจัดการกิจกรรม (Activities) ต่อผู้ใช้ |
-
-> **หมายเหตุ:** ฝั่งหน้าเว็บในปัจจุบันยังใช้ข้อมูลตัวอย่างใน state เป็นส่วนใหญ่ การเชื่อมต่อ API จริงสามารถต่อยอดจากค่า `VITE_API_BASE_URL` ในไฟล์ `.env` ได้
-
----
-
-## 🧭 โครงสร้างโปรเจกต์ (Project Structure)
+## โครงสร้างโปรเจกต์
 
 ```text
-To-Do App/
-└─ my-todo-app/
-   ├─ todo-frontend/   # React + Vite + MUI (UI/Mockup)
-   └─ todo-backend/    # ASP.NET Core Web API + EF Core + MariaDB
+To-DO-App/
+├─ my-todo-app/
+│  ├─ database/      # SQL init script
+│  ├─ todo-backend/  # ASP.NET Core 8 Web API
+│  ├─ todo-web/      # React + Vite + MUI (Web)
+│  └─ todo-mobile/   # React Native + Expo (Mobile)
+└─ .github/workflows/ci.yml
 ```
 
----
+## README แยกโฟลเดอร์
 
-## 🛠️ สิ่งที่ต้องเตรียมพร้อม (Prerequisites)
+- `my-todo-app/README.md`
+- `my-todo-app/database/README.md`
+- `my-todo-app/todo-backend/README.md`
+- `my-todo-app/todo-web/README.md`
+- `my-todo-app/todo-mobile/README.md`
+- `SETUP_FOR_FRIEND_WINDOWS.md` (คู่มือเครื่องใหม่แบบไม่มีเครื่องมือมาก่อน)
 
-ก่อนเริ่มงาน ติดตั้งเครื่องมือต่อไปนี้ให้ครบ:
+## Quick Start (สำหรับเครื่องที่มีเครื่องมือครบแล้ว)
 
-| โปรแกรม | คำแนะนำเวอร์ชัน | หมายเหตุ |
-|---------|-----------------|----------|
-| **Node.js** | **LTS** (แนะนำ v20 หรือ v22) | ใช้รัน `npm` ฝั่ง Frontend ([ดาวน์โหลด Node.js](https://nodejs.org/)) |
-| **.NET SDK** | **8.0** ขึ้นไป | ใช้รัน Backend (`dotnet --version` ควรแสดง 8.x) |
-| **MariaDB** | เวอร์ชันที่รองรับ MySQL protocol | ใช้เป็นฐานข้อมูลหลักของ API |
-| **เครื่องมือจัดการฐานข้อมูล** | **HeidiSQL**, DBeaver หรือ MySQL Workbench | ใช้สร้างฐานข้อมูล / นำเข้าไฟล์ `.sql` |
+1. รัน DB แล้ว import `my-todo-app/database/todo_db_init.sql`
+2. รัน backend:
+   - `cd my-todo-app/todo-backend`
+   - `dotnet run --urls "http://0.0.0.0:5555"`
+3. รัน web:
+   - `cd my-todo-app/todo-web`
+   - `npm install`
+   - `npm run dev`
+4. รัน mobile:
+   - `cd my-todo-app/todo-mobile`
+   - `npm install`
+   - แก้ `src/api.js` ให้เป็น IP เครื่องที่รัน backend
+   - `npx expo start --clear --port 8084`
+   - ใช้ Expo Go ในมือถือจริงสแกน QR
 
-> **เคล็ดลับ:** หลังติดตั้ง MariaDB ให้จด **รหัสผู้ใช้** (มักเป็น `root`) และ **รหัสผ่าน** ไว้ใช้ใน `appsettings.json` ของ Backend
+## กรณี `.gitignore` หายจาก GitHub
 
----
+โปรเจกต์นี้ต้องมีไฟล์เหล่านี้:
+- `my-todo-app/.gitignore`
+- `my-todo-app/todo-web/.gitignore`
+- `my-todo-app/todo-mobile/.gitignore`
 
-## 📦 เวอร์ชันแพ็กเกจหลัก (อ้างอิงจากโปรเจกต์)
-
-### Frontend — `todo-frontend/package.json`
-
-**Dependencies**
-
-| แพ็กเกจ | เวอร์ชันในไฟล์ |
-|---------|----------------|
-| `react` | `^19.2.4` |
-| `react-dom` | `^19.2.4` |
-| `react-router-dom` | `^7.13.2` |
-| `@mui/material` | `^7.3.9` |
-| `@mui/icons-material` | `^7.3.9` |
-| `@mui/x-date-pickers` | `^8.27.2` |
-| `@emotion/react` | `^11.14.0` |
-| `@emotion/styled` | `^11.14.1` |
-| `dayjs` | `^1.11.20` |
-| `react-hot-toast` | `^2.6.0` |
-
-**DevDependencies**
-
-| แพ็กเกจ | เวอร์ชันในไฟล์ |
-|---------|----------------|
-| `vite` | `^8.0.1` |
-| `@vitejs/plugin-react` | `^6.0.1` |
-| `eslint` | `^9.39.4` |
-| `@eslint/js` | `^9.39.4` |
-| `eslint-plugin-react-hooks` | `^7.0.1` |
-| `eslint-plugin-react-refresh` | `^0.5.2` |
-| `globals` | `^17.4.0` |
-| `@types/react` | `^19.2.14` |
-| `@types/react-dom` | `^19.2.3` |
-
-### Backend — `todo-backend/TodoBackend.csproj` (NuGet)
-
-> ฝั่ง Backend ใช้ **.NET** ไม่มีไฟล์ `package.json` ชื่อแพ็กเกจและเวอร์ชันอยู่ในไฟล์โปรเจกต์ดังนี้
-
-| แพ็กเกจ (NuGet) | เวอร์ชัน |
-|-----------------|----------|
-| `Microsoft.AspNetCore.OpenApi` | `8.0.25` |
-| `Microsoft.AspNetCore.Authentication.JwtBearer` | `8.0.25` |
-| `Microsoft.EntityFrameworkCore.Design` | `8.0.10` |
-| `Pomelo.EntityFrameworkCore.MySql` | `8.0.2` |
-| `Swashbuckle.AspNetCore` | `6.6.2` |
-
-**Target framework:** `net8.0`
-
----
-
-## 📥 ขั้นตอนการติดตั้ง (Installation)
-
-### 1) โคลนหรือดาวน์โหลดโปรเจกต์
-
-เปิดเทอร์มินัลแล้วเข้าไปยังโฟลเดอร์โปรเจกต์หลัก:
+ถ้าหาย ให้รัน:
 
 ```bash
-cd my-todo-app
+git checkout main
+git pull
+git checkout -b chore/restore-gitignore
+git add my-todo-app/.gitignore my-todo-app/todo-web/.gitignore my-todo-app/todo-mobile/.gitignore
+git commit -m "restore missing gitignore files"
+git push -u origin chore/restore-gitignore
 ```
 
-### 2) ติดตั้งแพ็กเกจ Frontend
+แล้วเปิด PR เข้า `main`
+
+## การทำงานแบบแยก Branch สำหรับเพื่อน
+
+ใช้แนวทางนี้เพื่อลดการชนกันของงาน:
+
+1. สร้าง branch จาก `main` เสมอ
+2. 1 branch = 1 เป้าหมายชัดเจน
+3. เปิด PR พร้อมรายการทดสอบก่อน merge
+
+ตัวอย่าง branch name:
+- `feat/web-ui-polish`
+- `feat/mobile-ui-polish`
+- `fix/mobile-auth-flow`
+- `chore/readme-update`
+
+คำสั่งมาตรฐาน:
 
 ```bash
-cd todo-frontend
-npm install
-cd ..
+git checkout main
+git pull
+git checkout -b feat/web-ui-polish
+# ทำงาน + commit
+git push -u origin feat/web-ui-polish
 ```
 
-### 3) ติดตั้ง / Restore ฝั่ง Backend
+## CI ที่เปิดใช้งานแล้ว
 
-โปรเจกต์ .NET ดึงแพ็กเกจ NuGet อัตโนมัติเมื่อ build:
+ไฟล์: `.github/workflows/ci.yml`
 
-```bash
-cd todo-backend
-dotnet restore
-cd ..
-```
-
----
-
-## 🔐 การตั้งค่า Environment (.env)
-
-### ฝั่ง Frontend (Vite)
-
-1. ไปที่โฟลเดอร์ `todo-frontend`
-2. **คัดลอก** ไฟล์ `.env.example` ไปเป็นไฟล์ชื่อ `.env` (อย่า commit ไฟล์ `.env` ขึ้น Git)
-3. แก้ค่าตามเครื่องของคุณ:
-
-| ตัวแปร | ความหมาย |
-|--------|----------|
-| `VITE_API_BASE_URL` | ที่อยู่ฐานของ Web API **ไม่มี** `/` ปิดท้าย — ค่าเริ่มต้น `http://localhost:5102` ให้ตรงกับพอร์ตที่ Backend ใช้ (ดู `Properties/launchSettings.json` profile `http`) |
-
-> **หมายเหตุ:** โค้ดปัจจุบันอาจยังไม่ได้อ่านตัวแปรนี้ในทุกจุด — การตั้งค่าไว้ก่อนช่วยเมื่อเชื่อม API จริง
-
-### ฝั่ง Backend
-
-โปรเจกต์นี้ใช้ **`appsettings.json`** (ไม่ใช้ไฟล์ `.env` แบบ Node)
-
-แก้ไขการตั้งค่าได้ที่:
-
-- `todo-backend/appsettings.json` (ค่าทั่วไป)
-- `todo-backend/appsettings.Development.json` (ค่าสำหรับเครื่องพัฒนา)
-
-| ส่วน | สิ่งที่ต้องปรับ |
-|------|------------------|
-| `ConnectionStrings:TodoDb` | ให้ `server`, `database`, `user`, `password` ตรงกับ MariaDB บนเครื่อง |
-| `Jwt:Key` | ตั้งเป็น **สตริงลับยาวๆ** (อย่างน้อย 32 ตัวอักษร) — **ห้าม** ใช้ค่า `CHANGE_ME_...` ในการส่งงานจริง |
-| `Jwt:Issuer` / `Jwt:Audience` | ปกติใช้ค่าเดิมได้ถ้า Frontend เรียก API เครื่องเดียวกัน |
-
-> **ความปลอดภัย:** อย่า commit รหัสผ่านฐานข้อมูลหรือ JWT secret จริงลงที่สาธารณะ — ใช้ User Secrets หรือตัวแปรสภาพแวดล้อมบนเซิร์ฟเวอร์จริง
-
----
-
-## 🔑 หมายเหตุด้าน JWT (อัปเดตตามโค้ดปัจจุบัน)
-
-การออก token จาก `POST /api/tokens` มีพฤติกรรมหลักดังนี้:
-
-- ใช้ claim `unique_name` เพื่อเก็บ `userId`
-- ใส่ claim `role` ค่าเริ่มต้นเป็น `user`
-- ใส่ `iat` (issued at) ตามเวลา UTC ปัจจุบัน
-- ตั้ง `notBefore` (`nbf`) เป็นเวลา UTC ปัจจุบัน
-- ตั้ง `expires` (`exp`) เป็นเวลาหมดอายุ **3 ชั่วโมง**
-
-> ฝั่ง API ยังคงตรวจสอบอายุ token และลายเซ็นตาม `TokenValidationParameters` ใน `Program.cs`
-
----
-
-## 🗄️ การตั้งค่าฐานข้อมูล (Database Setup)
-
-### ขั้นตอนที่ 1 — ให้ MariaDB ทำงาน
-
-เปิดบริการ MariaDB บนเครื่อง (Windows: Services / XAMPP / ฯลฯ)
-
-### ขั้นตอนที่ 2 — นำเข้าไฟล์ SQL
-
-โปรเจกต์มีไฟล์เริ่มต้นที่:
-
-`database/todo_db_init.sql`
-
-**ตัวอย่างด้วย HeidiSQL:**
-
-1. เปิด HeidiSQL → สร้างการเชื่อมต่อไปยัง `localhost` ด้วย user/password ที่ใช้จริง
-2. เมนู **File → Load SQL file…** เลือก `todo_db_init.sql`
-3. รันสคริปต์ (F9 หรือปุ่ม Execute)
-4. ตรวจสอบว่ามีฐานข้อมูล **`todo_db`** และตาราง **`user`**, **`activity`**
-
-> หากรหัสผ่าน root ไม่ตรงกับใน `appsettings.json` ให้แก้ `ConnectionStrings:TodoDb` ให้ตรงก่อนรัน Backend
-
----
-
-## ▶️ การรันโปรเจกต์ (Running the App)
-
-ต้องเปิด **สองเทอร์มินัล** (หรือสองแท็บ) — หนึ่งสำหรับ Backend หนึ่งสำหรับ Frontend
-
-### Backend (ASP.NET Core)
-
-```bash
-cd todo-backend
-dotnet run
-```
-
-- โดยปกติ API จะฟังที่ **`http://localhost:5102`** (ดู `launchSettings.json`)
-- ในโหมด Development เปิด **Swagger UI** ตาม URL ที่คอนโซลแสดง (มักเป็น `http://localhost:5102/swagger`)
-
-### Frontend (Vite)
-
-```bash
-cd todo-frontend
-npm run dev
-```
-
-- เปิดเบราว์เซอร์ตาม URL ที่ Vite แสดง (มักเป็น **`http://localhost:5173`**)
-
-### ลำดับที่แนะนำ
-
-1. เปิด MariaDB และยืนยันว่ามีฐาน `todo_db` แล้ว  
-2. รัน **Backend** ก่อน  
-3. รัน **Frontend**  
-4. ทดสอบ API ผ่าน Swagger หรือใช้แอปหน้าเว็บตาม flow ของทีม
-
----
-
-## 🔌 สถานะการเชื่อมต่อ Frontend ↔ Backend
-
-- ปัจจุบัน `todo-frontend` ยังเป็น **Mock UI** เป็นหลัก
-- หน้า `Login` ยังใช้ `localStorage` flag (`todo_authed`) เพื่อจำลองการล็อกอิน
-- หน้า `Main` ยังใช้ข้อมูลตัวอย่างใน state (ยังไม่ดึง `GET /api/activities` จริง)
-- ค่า `VITE_API_BASE_URL` ถูกเตรียมไว้แล้วใน `.env.example` เพื่อใช้ตอนเชื่อม API จริง
-
-> แนะนำลำดับการต่อยอด: Login (`POST /api/tokens`) → เก็บ JWT → ส่ง `Authorization: Bearer <token>` ตอนเรียก Activities API
-
----
-
-## 📚 สรุปคำสั่งที่ใช้บ่อย
-
-| งาน | คำสั่ง |
-|-----|--------|
-| ติดตั้งแพ็กเกจ Frontend | `cd todo-frontend && npm install` |
-| รัน Frontend (dev) | `cd todo-frontend && npm run dev` |
-| Build Frontend | `cd todo-frontend && npm run build` |
-| Restore / Build Backend | `cd todo-backend && dotnet restore && dotnet build` |
-| รัน Backend | `cd todo-backend && dotnet run` |
-
----
-
-> **ส่งงาน / นำเสนอ:** แนะนำให้แนบภาพหน้าจอ Swagger, หน้าเว็บที่รันสำเร็จ และอธิบายบทบาทของแต่ละฝั่งตามเอกสารนี้
+รันอัตโนมัติบน `push` และ `pull_request`:
+- Web unit tests
+- Web Playwright E2E
+- Mobile Jest tests

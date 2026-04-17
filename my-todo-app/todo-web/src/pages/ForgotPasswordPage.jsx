@@ -10,7 +10,6 @@ import {
   IconButton,
   InputAdornment,
   Link,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -18,40 +17,55 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { api } from '../lib/api.js'
+import {
+  sanitizeNoSpaces,
+  validateNationalId,
+  validatePassword,
+  validatePersonName,
+} from '../utils/validation.js'
 
-const titleOptions = ['Mr.', 'Mrs.', 'Ms.']
-
-export function RegisterPage() {
+export function ForgotPasswordPage() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     nationalId: '',
-    title: '',
     firstName: '',
     lastName: '',
-    password: '',
+    newPassword: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const errors = {
+    nationalId: validateNationalId(form.nationalId),
+    firstName: validatePersonName(form.firstName, 'ชื่อ'),
+    lastName: validatePersonName(form.lastName, 'นามสกุล'),
+    newPassword: validatePassword(form.newPassword),
+  }
+  const isFormValid = Object.values(errors).every((value) => !value)
 
   const onChange = (key) => (event) => {
-    setForm((prev) => ({ ...prev, [key]: event.target.value }))
+    let value = event.target.value
+    if (key === 'nationalId' || key === 'newPassword') {
+      value = sanitizeNoSpaces(value)
+    }
+    setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   const onSubmit = async (event) => {
     event.preventDefault()
+    if (!isFormValid) return
 
     try {
       setIsSubmitting(true)
-      await api.post('/api/users/register', form)
-      toast.success('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ')
+      await api.post('/api/users/reset-password', form)
+      toast.success('รีเซ็ตรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบใหม่')
       navigate('/login')
     } catch (error) {
-      if (error?.response?.status === 409) {
-        toast.error('NationalId นี้ถูกใช้งานแล้ว')
+      if (error?.response?.status === 404) {
+        toast.error('ไม่พบข้อมูลผู้ใช้ตามที่ระบุ')
         return
       }
 
-      toast.error('ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่')
+      toast.error('ไม่สามารถรีเซ็ตรหัสผ่านได้ กรุณาลองใหม่')
     } finally {
       setIsSubmitting(false)
     }
@@ -65,10 +79,10 @@ export function RegisterPage() {
             <Stack spacing={2.25} component="form" onSubmit={onSubmit}>
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 900 }}>
-                  สมัครสมาชิก
+                  ตั้งรหัสผ่านใหม่
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  สร้างบัญชีเพื่อใช้งานระบบ To-Do
+                  ยืนยันตัวตนด้วย National ID และชื่อ-นามสกุล
                 </Typography>
               </Box>
 
@@ -78,26 +92,17 @@ export function RegisterPage() {
                 onChange={onChange('nationalId')}
                 required
                 fullWidth
+                error={!!errors.nationalId}
+                helperText={errors.nationalId}
               />
-              <TextField
-                select
-                label="Title"
-                value={form.title}
-                onChange={onChange('title')}
-                fullWidth
-              >
-                {titleOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
               <TextField
                 label="First Name"
                 value={form.firstName}
                 onChange={onChange('firstName')}
                 required
                 fullWidth
+                error={!!errors.firstName}
+                helperText={errors.firstName}
               />
               <TextField
                 label="Last Name"
@@ -105,14 +110,18 @@ export function RegisterPage() {
                 onChange={onChange('lastName')}
                 required
                 fullWidth
+                error={!!errors.lastName}
+                helperText={errors.lastName}
               />
               <TextField
-                label="Password"
+                label="New Password"
                 type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={onChange('password')}
+                value={form.newPassword}
+                onChange={onChange('newPassword')}
                 required
                 fullWidth
+                error={!!errors.newPassword}
+                helperText={errors.newPassword}
                 slotProps={{
                   input: {
                     endAdornment: (
@@ -130,12 +139,16 @@ export function RegisterPage() {
                 }}
               />
 
-              <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
-                {isSubmitting ? 'Registering...' : 'Register'}
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={isSubmitting || !isFormValid}
+              >
+                {isSubmitting ? 'Updating...' : 'Reset Password'}
               </Button>
 
               <Typography variant="body2">
-                มีบัญชีแล้ว?{' '}
                 <Link component={RouterLink} to="/login" underline="hover">
                   กลับไปหน้า Login
                 </Link>
