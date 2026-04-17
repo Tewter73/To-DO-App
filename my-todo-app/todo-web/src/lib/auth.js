@@ -9,7 +9,7 @@ export function getAuthToken() {
 }
 
 export function setAuthToken(token) {
-  localStorage.removeItem(TOKEN_KEY)
+  localStorage.setItem(TOKEN_KEY, token)
   cookies.set(TOKEN_KEY, token, {
     path: '/',
     sameSite: 'lax',

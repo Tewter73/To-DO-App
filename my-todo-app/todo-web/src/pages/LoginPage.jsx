@@ -18,6 +18,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { api } from '../lib/api.js'
 import { setAuthToken, setFirstName } from '../lib/auth.js'
+import {
+  sanitizeNoSpaces,
+  validateNationalId,
+  validatePassword,
+} from '../utils/validation.js'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -25,9 +30,13 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const nationalIdError = validateNationalId(nationalId)
+  const passwordError = validatePassword(password)
+  const isFormValid = !nationalIdError && !passwordError
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    if (!isFormValid) return
 
     try {
       setIsSubmitting(true)
@@ -76,20 +85,24 @@ export function LoginPage() {
               <TextField
                 label="National ID"
                 value={nationalId}
-                onChange={(e) => setNationalId(e.target.value)}
+                onChange={(e) => setNationalId(sanitizeNoSpaces(e.target.value))}
                 autoComplete="username"
                 inputMode="numeric"
                 fullWidth
                 required
+                error={!!nationalIdError}
+                helperText={nationalIdError}
               />
               <TextField
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(sanitizeNoSpaces(e.target.value))}
                 autoComplete="current-password"
                 fullWidth
                 required
+                error={!!passwordError}
+                helperText={passwordError}
                 slotProps={{
                   input: {
                     endAdornment: (
@@ -112,7 +125,7 @@ export function LoginPage() {
                 variant="contained"
                 size="large"
                 fullWidth
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
               >
                 {isSubmitting ? 'Signing in...' : 'Sign In'}
               </Button>
