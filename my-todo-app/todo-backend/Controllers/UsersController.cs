@@ -37,6 +37,11 @@ public sealed class UsersController : ControllerBase
             return BadRequest();
         }
 
+        request.NationalId = request.NationalId.Trim();
+        request.FirstName = request.FirstName.Trim();
+        request.LastName = request.LastName.Trim();
+        request.Title = request.Title?.Trim();
+
         var exists = await _db.User.AnyAsync(x => x.NationalId == request.NationalId);
         if (exists)
         {
@@ -101,12 +106,15 @@ public sealed class UsersController : ControllerBase
             return BadRequest();
         }
 
-        var user = await _db.User.SingleOrDefaultAsync(x =>
-            x.NationalId == request.NationalId &&
-            x.FirstName == request.FirstName &&
-            x.LastName == request.LastName);
+        var nationalId = request.NationalId.Trim();
+        var firstName = request.FirstName.Trim();
+        var lastName = request.LastName.Trim();
 
-        if (user is null)
+        var user = await _db.User.SingleOrDefaultAsync(x => x.NationalId == nationalId);
+
+        if (user is null ||
+            !string.Equals(user.FirstName?.Trim(), firstName, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(user.LastName?.Trim(), lastName, StringComparison.OrdinalIgnoreCase))
         {
             return NotFound();
         }
