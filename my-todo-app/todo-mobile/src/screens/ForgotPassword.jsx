@@ -8,6 +8,7 @@ import {
   validatePassword,
   validatePersonName,
 } from '../utils/validation'
+import { layout, palette, shadows } from '../ui/design'
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [form, setForm] = useState({
@@ -74,18 +75,27 @@ export default function ForgotPasswordScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={{ flex: 1 }} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 20}
     >
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 16 }}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: layout.pagePadding, backgroundColor: palette.background }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Card style={{ marginVertical: 20 }}>
-          <Card.Content>
+        <View style={{ marginBottom: 24, paddingHorizontal: 4 }}>
+          <Text variant="displaySmall" style={{ fontWeight: '900', color: palette.primary }}>
+            Reset password
+          </Text>
+          <Text variant="titleMedium" style={{ marginTop: 8, color: palette.textSecondary }}>
+            Verify identity and set a new secure password.
+          </Text>
+        </View>
+
+        <Card style={{ marginVertical: 8, borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.medium }}>
+          <Card.Content style={{ padding: 20 }}>
             <Title style={{ marginBottom: 16 }}>Reset Password</Title>
 
             <LabelError error={displayError('nationalId')} />
@@ -98,7 +108,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               keyboardType="numeric"
               autoCapitalize="none"
               autoCorrect={false}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
 
             <LabelError error={displayError('firstName')} />
@@ -108,7 +118,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               mode="outlined"
               value={form.firstName}
               onChangeText={onChange('firstName')}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
 
             <LabelError error={displayError('lastName')} />
@@ -118,7 +128,7 @@ export default function ForgotPasswordScreen({ navigation }) {
               mode="outlined"
               value={form.lastName}
               onChangeText={onChange('lastName')}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
 
             <LabelError error={displayError('newPassword')} />
@@ -137,14 +147,14 @@ export default function ForgotPasswordScreen({ navigation }) {
                   onPress={() => setSecureText((prev) => !prev)}
                 />
               }
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 16, backgroundColor: '#FFFFFF' }}
             />
 
-            <Button mode="contained" onPress={onSubmit} loading={loading} style={{ marginTop: 8 }}>
-              บันทึกรหัสผ่านใหม่
+            <Button mode="contained" onPress={onSubmit} loading={loading} style={{ marginTop: 12, borderRadius: 12 }} contentStyle={{ paddingVertical: 8 }} labelStyle={{ fontSize: 16, fontWeight: '700' }}>
+              Save New Password
             </Button>
-            <Button mode="text" onPress={() => navigation.goBack()} style={{ marginTop: 8 }}>
-              กลับไปหน้า Login
+            <Button mode="text" onPress={() => navigation.goBack()} style={{ marginTop: 12 }}>
+              Back to Sign In
             </Button>
           </Card.Content>
         </Card>

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kunanon\\Documents\\GitHub\\To-DO-App\\my-todo-app\\todo-backend\\TodoBackend.csproj": {}
+    "/Users/tata/Downloads/AppDeep_Naruto/To-DO-App/my-todo-app/todo-backend/TodoBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kunanon\\Documents\\GitHub\\To-DO-App\\my-todo-app\\todo-backend\\TodoBackend.csproj": {
+    "/Users/tata/Downloads/AppDeep_Naruto/To-DO-App/my-todo-app/todo-backend/TodoBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kunanon\\Documents\\GitHub\\To-DO-App\\my-todo-app\\todo-backend\\TodoBackend.csproj",
+        "projectUniqueName": "/Users/tata/Downloads/AppDeep_Naruto/To-DO-App/my-todo-app/todo-backend/TodoBackend.csproj",
         "projectName": "TodoBackend",
-        "projectPath": "C:\\Users\\Kunanon\\Documents\\GitHub\\To-DO-App\\my-todo-app\\todo-backend\\TodoBackend.csproj",
-        "packagesPath": "C:\\Users\\Kunanon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kunanon\\Documents\\GitHub\\To-DO-App\\my-todo-app\\todo-backend\\obj\\",
+        "projectPath": "/Users/tata/Downloads/AppDeep_Naruto/To-DO-App/my-todo-app/todo-backend/TodoBackend.csproj",
+        "packagesPath": "/var/folders/gn/x2d2dckd4pg7yzghv024c52w0000gn/T/cursor-sandbox-cache/40575ba612100607afc2c6b2506add6a/nuget",
+        "outputPath": "/Users/tata/Downloads/AppDeep_Naruto/To-DO-App/my-todo-app/todo-backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Kunanon\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/tata/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -77,6 +78,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.21, 8.0.21]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[8.0.21, 8.0.21]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.21, 8.0.21]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -85,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

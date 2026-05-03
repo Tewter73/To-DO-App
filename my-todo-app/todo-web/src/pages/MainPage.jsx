@@ -176,7 +176,7 @@ export function MainPage() {
             </Typography>
           </Box>
 
-          <Paper sx={{ p: 2 }}>
+          <Paper sx={{ p: 2, borderRadius: 1 }}>
             <Stack spacing={1.5}>
               <Typography sx={{ fontWeight: 700 }}>เพิ่มงานใหม่</Typography>
               <TextField
@@ -210,7 +210,7 @@ export function MainPage() {
 
           <Stack spacing={2}>
             {!loading && normalizedTodos.length === 0 ? (
-              <Card variant="outlined">
+              <Card variant="outlined" sx={{ borderRadius: 1 }}>
                 <CardContent>
                   <Typography sx={{ fontWeight: 700 }}>
                     ไม่มีรายการคงเหลือ
@@ -223,14 +223,14 @@ export function MainPage() {
             ) : null}
 
             {loading ? (
-              <Card variant="outlined">
+              <Card variant="outlined" sx={{ borderRadius: 1 }}>
                 <CardContent>
                   <Typography>กำลังโหลดข้อมูล...</Typography>
                 </CardContent>
               </Card>
             ) : (
               normalizedTodos.map((t) => (
-                <Card key={t.id} variant="outlined">
+                <Card key={t.id} variant="outlined" sx={{ borderRadius: 1 }}>
                   <CardHeader
                     title={
                       <Typography sx={{ fontWeight: 900 }}>{t.title}</Typography>
@@ -265,6 +265,7 @@ export function MainPage() {
         onClose={closeEditDialog}
         fullWidth
         maxWidth="xs"
+        PaperProps={{ sx: { borderRadius: 0 } }}
       >
         <DialogTitle sx={{ fontWeight: 900, color: 'text.primary' }}>
           แก้ไขรายการ To-Do
