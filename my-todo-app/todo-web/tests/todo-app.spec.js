@@ -14,7 +14,7 @@ test.describe('To-Do Web App', () => {
   })
 
   test('register success redirects back to login', async ({ page }) => {
-    await page.route('**/api/users/register', async (route) => {
+    await page.route('**/api/users', async (route) => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
     })
 
@@ -129,6 +129,7 @@ test.describe('To-Do Web App', () => {
     await expect(page.getByText('Updated Todo')).toBeVisible()
 
     await page.getByLabel('delete todo').last().click()
+    await page.getByRole('button', { name: 'Delete' }).click()
     await expect(page.getByText('Updated Todo')).not.toBeVisible()
   })
 })
