@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { CssBaseline } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import toast from 'react-hot-toast'
@@ -72,21 +73,29 @@ function AppRoutes() {
   )
 }
 
+const theme = createTheme({
+  typography: {
+    fontFamily: ['Chakra Petch', 'Segoe UI', 'Roboto', 'sans-serif'].join(','),
+  },
+})
+
 export default function App() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th">
       <BrowserRouter>
-        <CssBaseline />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 2500,
-            success: { style: { background: '#16a34a', color: '#fff' } },
-            error: { style: { background: '#dc2626', color: '#fff' } },
-          }}
-        />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 2500,
+              success: { style: { background: '#16a34a', color: '#fff' } },
+              error: { style: { background: '#dc2626', color: '#fff' } },
+            }}
+          />
 
-        <AppRoutes />
+          <AppRoutes />
+        </ThemeProvider>
       </BrowserRouter>
     </LocalizationProvider>
   )

@@ -92,6 +92,11 @@ export function LoginPage() {
                 required
                 error={!!nationalIdError}
                 helperText={nationalIdError}
+                sx={{
+                  '& .MuiInputLabel-root, & .MuiInputLabel-root.Mui-focused, & .MuiInputLabel-root.Mui-error': {
+                    color: 'rgba(0, 0, 0, 0.45)',
+                  },
+                }}
               />
               <TextField
                 label="Password"
@@ -103,6 +108,11 @@ export function LoginPage() {
                 required
                 error={!!passwordError}
                 helperText={passwordError}
+                sx={{
+                  '& .MuiInputLabel-root, & .MuiInputLabel-root.Mui-focused, & .MuiInputLabel-root.Mui-error': {
+                    color: 'rgba(0, 0, 0, 0.45)',
+                  },
+                }}
                 slotProps={{
                   input: {
                     endAdornment: (
