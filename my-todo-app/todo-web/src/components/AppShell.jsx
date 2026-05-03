@@ -72,8 +72,8 @@ export function AppShell() {
       ]
 
   return (
-    <Box id="outer-container" sx={{ minHeight: '100vh', bgcolor: '#f5f7fb' }}>
-      <AppBar position="sticky" elevation={1}>
+    <Box id="outer-container" sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar position="sticky" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar>
           {!isAuthPage ? (
             <IconButton

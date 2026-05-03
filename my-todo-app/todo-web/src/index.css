@@ -10,7 +10,8 @@ body {
 
 .bm-overlay {
   top: 0 !important;
-  background: rgba(0, 0, 0, 0.35) !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(4px);
   z-index: 1299 !important;
 }
 
@@ -18,38 +19,43 @@ body {
   top: 0 !important;
   height: 100% !important;
   z-index: 1300 !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
 }
 
 .bm-menu {
-  background: #0f172a;
-  padding: 1rem 0.8rem;
+  background: #FFFFFF;
+  padding: 1.5rem 1rem;
 }
 
 .menu-title {
-  color: #e2e8f0;
-  font-size: 0.85rem;
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0.4rem 0.8rem 1rem;
+  letter-spacing: 0.1em;
+  margin: 0.5rem 1rem 1.5rem;
 }
 
 .menu-item-link {
   width: 100%;
   border: none;
   background: transparent;
-  color: #f8fafc;
+  color: #0F172A;
   text-align: left;
-  padding: 0.8rem;
-  border-radius: 10px;
+  padding: 1rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 1rem;
   font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .menu-item-link:hover {
-  background: rgba(148, 163, 184, 0.2);
+  background: #F1F5F9;
+  color: #4338CA;
 }
 
 /* ซ่อนไอคอน reveal password ของเบราว์เซอร์ เพื่อไม่ให้ซ้อนกับไอคอน MUI */
