@@ -28,7 +28,7 @@ public sealed class TokensController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateToken([FromBody] TokenCreateRequest request)
+    public async Task<IActionResult> CreateToken([FromBody] Login request)
     {
         if (string.IsNullOrWhiteSpace(request.NationalId) || string.IsNullOrWhiteSpace(request.Password))
         {

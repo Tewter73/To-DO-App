@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `activity` (
   PRIMARY KEY (`Id`),
   KEY `FK_activity_user` (`UserId`),
   CONSTRAINT `FK_activity_user` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_thai_520_w2;
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_thai_520_w2;
 
--- Dumping data for table todo_db.activity: ~29 rows (approximately)
+-- Dumping data for table todo_db.activity: seed rows (NationalId-invalid users และกิจกรรมที่อ้างถึงถูกลบแล้ว)
 INSERT INTO `activity` (`Id`, `Name`, `When`, `UserId`) VALUES
 	(1, 'อ่านหนังสือเตรียมสอบ .NET', '2026-04-02 09:00:00', 2),
 	(2, 'ไปออกกำลังกายที่ยิม', '2026-04-03 17:30:00', 2),
@@ -41,10 +41,6 @@ INSERT INTO `activity` (`Id`, `Name`, `When`, `UserId`) VALUES
 	(9, 'ยกเวท', '2026-04-03 11:52:49', 11),
 	(10, 'ติวหนังสือ', '2026-04-04 11:52:49', 11),
 	(12, 'อ่านหนังสือเตรียมสอบ', '2026-04-10 10:00:00', 13),
-	(15, 'วิ่ง', '2026-04-03 20:00:12', 16),
-	(17, 'string', '2026-04-03 02:12:55', 17),
-	(18, 'string', '2026-04-03 02:16:59', 17),
-	(19, 'string', '2026-04-03 02:21:57', 3),
 	(20, 'Smoke test activity', '2026-04-17 10:00:00', 19),
 	(21, 'Hyrox', '2026-04-20 04:09:43', 20),
 	(23, 'Hyrox 3 PUT', '2026-04-23 04:12:13', 20),
@@ -73,14 +69,12 @@ CREATE TABLE IF NOT EXISTS `user` (
   `LastName` varchar(100) NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `NationalId` (`NationalId`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_thai_520_w2;
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_thai_520_w2;
 
--- Dumping data for table todo_db.user: ~30 rows (approximately)
+-- Dumping data for table todo_db.user: seed rows (ลบแถวที่ NationalId ไม่ครบ 13 หลัก / ไม่ใช่เลขบัตรประชาชน)
 INSERT INTO `user` (`Id`, `NationalId`, `Salt`, `HashedPassword`, `Title`, `FirstName`, `LastName`) VALUES
 	(1, '1111111111111', 'FJQPHYc1uPwQcJGigTB2fw==', '+/1f7Gyj2jLFXFxwFVtkXdPDTCBQlrBs7UGnUCkUjVE=', 'Mr.', 'Kunanon', 'Sopacharoen'),
 	(2, '1234567890123', 'KTB72IRE8GX0yX5scxXVag==', 'T+zD6wLr+OQjgQJdcAdkh5Byaqhb37Pxf6spc5SXQrs=', 'Mr.', 'Kunanon', 'Sopacharoen'),
-	(3, 'string', 'WGnbWRKpdavwIUyhbBKfrA==', 'PgFrmrLqkN1mxFN1lQqtrrrP5ZrFwvJI7rzefd2HtK8=', 'string', 'string', 'string'),
-	(4, '1234', 'PJlknZi7FTjCdRX1qfpJ+w==', 'lEB9fE/O2bijv0GbZf9fqaHBh9VGnu6JU9XaTMgfWVs=', 'string', 'string', 'string'),
 	(5, '9999999999999', 'x1KmbL699rZjB6YByBR95g==', '7bn2Y1/TAM/mP286qs4QxSZ+sd0Ojq53EXppThv6aWc=', 'Ms.', 'Test', 'Todoapp'),
 	(6, '8888888888888', 'BIV73+dlzUnsIRyb0/CRYQ==', 'Yxr1F1EUOiLXbAkp8emXGwaHopvuVZSl1Jabi/agpds=', 'Mr.', 'Test2', 'TodoApp'),
 	(7, '9888888888888', 'turzTOF2AerigBQL9QnvNw==', '2yA1ruJhEc70JLzCCUavQFXY65WIshTkOZEyzxsf9CI=', 'Mr.', 'Test3', 'TodoApp'),
@@ -92,14 +86,10 @@ INSERT INTO `user` (`Id`, `NationalId`, `Salt`, `HashedPassword`, `Title`, `Firs
 	(13, '1179900459567', 'KFLdXYnJ1pvnthvnXBd4Vw==', 'knfVEu/pEChOnmv6WVELLV9IdXWENCClnwnazcNXEdc=', 'Mr.', 'Testnew', 'Goodapp'),
 	(14, '3333333333333', 'Q0w4346jnz7Ym+I1pqcXaw==', '0Cu3boe9p3BLtlIwZsWt3pxBVi2hVrmidN/8VwOrbQY=', 'Mr.', 'Hallo', 'GGWP'),
 	(15, '1179900459456', 'RWfK5GZ9qirkKQyX1b6fpQ==', 'MbjKNUWzCd2zqosXNVxPT94zfCsdTc1RVyYiQ3CzvoE=', 'Mr.', 'Testnew', 'Goodapp'),
-	(16, '444444444444', '2uiwOdgsJww2KO5P5uie4g==', 'PHNXWn1Z8/4cXwVUJBIZKC1FTxMp2YNcX97v9Ck6IIw=', 'Mr.', 'Goodguy', 'Well'),
 	(17, '7894561233214', 'Y1PfkvAXo6xeM8/g8SN/gg==', 'Nvu+2K1riLADlGB0itB1b6G9QOszq4HVueAA40uU2ZE=', 'Ms.', 'Papa', 'Mama'),
-	(18, '555555555555', 'X2rKiDw8cy0wrVt3g7V2AQ==', 'Bnlj7Qr8/XUy7hdxgNc2igc7iKNhMICnoZ6sQ2ujKW0=', 'Mr.', 'June', 'July'),
 	(19, '9999999900011', 'GKcv8uIIfnOVTAeul46vcg==', 'hCfvFkq/8ZEeKOVYnX8OiFTEM1y+bsL56WuvGH9gf30=', 'Mr.', 'Db', 'Check'),
 	(20, '1455673456789', 'NaquJ+T3kzqRBpDBZhw4Fg==', 'lF+PltNHeMp4RlA2J8S8gSVwbJH9JJd96vdbywANqcQ=', 'Ms.', 'Chanon', 'Wongpojanee'),
 	(21, '9900117764014', 'zE5tu7XWMRUP0d8aucJOYA==', 'YjKnjAX/ahmOszXNqtbeDoPTn6AFDKQ4H+HDbE+1B1k=', 'Mr.', 'E2E', 'Flow'),
-	(22, '991776401437', 'fMk/E7Fp6/akZjR6XetPoQ==', '1lbMb0Gbg/0Id0drTo9c3ox3idkDyyGUN158qRaapp8=', 'Mr.', 'E2E', 'Flow'),
-	(23, '981776401502', '6O0kHvGGm8G9dhOnB7e8sg==', 'Ta+Gscx/DcdGgIaQWxXNqo3L0VVZmXdTERqK3mequj0=', 'Mr.', 'Neg', 'Case'),
 	(24, '1223344556677', 'UvYFeKvwCR6G3o00Oio5DQ==', 'bLjM/cavxK7HC3R0ZlwVX5tNyKW+tCXztK6Mh6009g4=', 'Mr.', 'Supakorn', 'Muattia'),
 	(25, '1223344556678', 'mDwv63pdofQCtbSAKW0aHQ==', 'e8Ie79SLV6SZyP18dhqey1pqKiz0W+J/trirWEhkPkw=', 'Mrs.', 'Pattaraphorn', 'Meedumnuen'),
 	(26, '1223344556679', 'O9kave8f1FqN39apfD7RKw==', 'UUtCWsDObxAu3ZGFLgRFZ8KIVhX95Ye2S0Ar/r263RI=', 'Mr.', 'Testy', 'asdfa'),

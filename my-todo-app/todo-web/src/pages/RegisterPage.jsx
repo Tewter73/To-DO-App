@@ -60,7 +60,7 @@ export function RegisterPage() {
 
     try {
       setIsSubmitting(true)
-      await api.post('/api/users/register', form)
+      await api.post('/api/users', form)
       toast.success('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ')
       navigate('/login')
     } catch (error) {

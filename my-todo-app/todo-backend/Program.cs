@@ -21,21 +21,11 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            // เปิดกว้างสำหรับทดสอบกับ Mobile App/Expo ในวง LAN
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        }
-        else
-        {
-            policy
-                .WithOrigins("http://localhost:5173")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        }
+        // สำหรับ requirement เทอมโปรเจกต์: เปิด CORS ทุก origin/method/header
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 

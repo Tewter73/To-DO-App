@@ -12,7 +12,7 @@ namespace TodoBackend.Controllers;
 // Why: แยกข้อมูลตาม userId จาก JWT — ผู้ใช้แต่ละคนเห็นเฉพาะรายการของตนเอง
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] // ทุก endpoint ต้องส่ง JWT ที่ออกจาก TokensController
+[Authorize(Roles = "user")] // ทุก endpoint ต้องเป็นผู้ใช้ที่ล็อกอินและมี role=user
 public sealed class ActivitiesController : ControllerBase
 {
     private readonly TodoDbContext _db;
@@ -40,6 +40,11 @@ public sealed class ActivitiesController : ControllerBase
             .OrderBy(x => x.When)
             .ToListAsync();
 
+        if (activities.Count == 0)
+        {
+            return NoContent();
+        }
+
         return Ok(activities);
     }
 
@@ -59,7 +64,7 @@ public sealed class ActivitiesController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Activity), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -82,8 +87,8 @@ public sealed class ActivitiesController : ControllerBase
         _db.Activity.Add(activity);
         await _db.SaveChangesAsync();
 
-        // HTTP 201 พร้อม Location ชี้ไปยังทรัพยากรที่สร้างใหม่
-        return Created($"/api/activities/{activity.Id}", activity);
+        // Requirement อาจารย์: HTTP 200 OK พร้อม JSON { id } หลังสร้างสำเร็จ
+        return Ok(new { id = activity.Id });
     }
 
     [HttpPut("{id}")]

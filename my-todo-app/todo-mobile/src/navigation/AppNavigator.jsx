@@ -55,7 +55,7 @@ function CustomDrawerContent(props) {
   )
 }
 
-function AppDrawer({ onSignOut, firstName }) {
+function AppDrawer({ firstName, onSignOut }) {
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -83,7 +83,6 @@ function AppDrawer({ onSignOut, firstName }) {
 
 export default function AppNavigator() {
   const [isLoading, setIsLoading] = useState(true)
-  const [isAuthed, setIsAuthed] = useState(false)
   const [firstName, setFirstName] = useState('')
 
   useEffect(() => {
@@ -91,25 +90,12 @@ export default function AppNavigator() {
       // Always require a fresh login when the app starts.
       await SecureStore.deleteItemAsync('token')
       await SecureStore.deleteItemAsync('firstName')
-      setIsAuthed(false)
       setFirstName('')
       setIsLoading(false)
     }
 
     bootstrap()
   }, [])
-
-  const handleSignInSuccess = (nextFirstName = '') => {
-    setIsAuthed(true)
-    setFirstName(nextFirstName)
-  }
-
-  const handleSignOut = async () => {
-    await SecureStore.deleteItemAsync('token')
-    await SecureStore.deleteItemAsync('firstName')
-    setIsAuthed(false)
-    setFirstName('')
-  }
 
   if (isLoading) {
     return (
@@ -121,20 +107,33 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer theme={navTheme}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthed ? (
-          <Stack.Screen name="App">
-            {(props) => <AppDrawer {...props} onSignOut={handleSignOut} firstName={firstName} />}
-          </Stack.Screen>
-        ) : (
-          <>
-            <Stack.Screen name="SignIn">
-              {(props) => <SignInScreen {...props} onSignInSuccess={handleSignInSuccess} />}
-            </Stack.Screen>
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-          </>
-        )}
+      <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="SignIn">
+          {(props) => (
+            <SignInScreen
+              {...props}
+              onSignInSuccess={(name) => setFirstName(name ?? '')}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="MainDrawer">
+          {(stackProps) => (
+            <AppDrawer
+              firstName={firstName}
+              onSignOut={async () => {
+                await SecureStore.deleteItemAsync('token')
+                await SecureStore.deleteItemAsync('firstName')
+                setFirstName('')
+                stackProps.navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'SignIn' }],
+                })
+              }}
+            />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   )

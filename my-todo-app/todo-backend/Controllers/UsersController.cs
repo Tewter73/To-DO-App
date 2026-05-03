@@ -22,7 +22,7 @@ public sealed class UsersController : ControllerBase
         _db = db;
     }
 
-    [HttpPost("register")]
+    [HttpPost]
     [ProducesResponseType(typeof(UserRegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ConflictErrorResponse), StatusCodes.Status409Conflict)]

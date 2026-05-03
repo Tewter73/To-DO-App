@@ -44,9 +44,12 @@ export function MainPage() {
   const [loading, setLoading] = useState(true)
   const [newTaskName, setNewTaskName] = useState('')
   const [newTaskWhen, setNewTaskWhen] = useState(dayjs())
+  const [searchTerm, setSearchTerm] = useState('')
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editTask, setEditTask] = useState({ title: '', datetime: null })
   const [editTaskId, setEditTaskId] = useState(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [deleteTaskId, setDeleteTaskId] = useState(null)
   const newTaskNameError = validateActivityName(newTaskName)
   const editTaskNameError = validateActivityName(editTask.title)
 
@@ -60,6 +63,12 @@ export function MainPage() {
     [todos],
   )
 
+  const filteredTodos = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+    if (!keyword) return normalizedTodos
+    return normalizedTodos.filter((item) => item.title.toLowerCase().includes(keyword))
+  }, [normalizedTodos, searchTerm])
+
   const handleAuthError = () => {
     clearAuthToken()
     toast.error('Token หมดอายุ กรุณาเข้าสู่ระบบใหม่')
@@ -69,8 +78,13 @@ export function MainPage() {
   const loadActivities = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get('/api/activities')
-      setTodos(data)
+      const response = await api.get('/api/activities')
+      const { data, status } = response
+      if (status === 204 || data == null || data === '') {
+        setTodos([])
+      } else {
+        setTodos(Array.isArray(data) ? data : [])
+      }
     } catch (error) {
       if (error?.response?.status === 401) {
         handleAuthError()
@@ -112,14 +126,32 @@ export function MainPage() {
     }
   }
 
-  const onDelete = async (id) => {
+  const openDeleteDialog = (id) => {
+    setDeleteTaskId(id)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const closeDeleteDialog = () => {
+    setIsDeleteDialogOpen(false)
+    setDeleteTaskId(null)
+  }
+
+  const confirmDelete = async () => {
+    if (deleteTaskId == null) {
+      return
+    }
+
+    const id = deleteTaskId
+
     try {
       await api.delete(`/api/activities/${id}`)
       setTodos((prev) => prev.filter((t) => t.id !== id))
       toast.success('ลบงานสำเร็จ')
+      closeDeleteDialog()
     } catch (error) {
       if (error?.response?.status === 401) {
         handleAuthError()
+        closeDeleteDialog()
         return
       }
 
@@ -206,6 +238,15 @@ export function MainPage() {
             </Stack>
           </Paper>
 
+          <Paper sx={{ p: 2, borderRadius: 1 }}>
+            <TextField
+              label="Search task"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              fullWidth
+            />
+          </Paper>
+
           <Divider />
 
           <Stack spacing={2}>
@@ -221,6 +262,18 @@ export function MainPage() {
                 </CardContent>
               </Card>
             ) : null}
+            {!loading && normalizedTodos.length > 0 && filteredTodos.length === 0 ? (
+              <Card variant="outlined" sx={{ borderRadius: 1 }}>
+                <CardContent>
+                  <Typography sx={{ fontWeight: 700 }}>
+                    ไม่พบงานที่ตรงกับคำค้นหา
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ลองเปลี่ยนคำค้นหาหรือล้างช่องค้นหา
+                  </Typography>
+                </CardContent>
+              </Card>
+            ) : null}
 
             {loading ? (
               <Card variant="outlined" sx={{ borderRadius: 1 }}>
@@ -229,7 +282,7 @@ export function MainPage() {
                 </CardContent>
               </Card>
             ) : (
-              normalizedTodos.map((t) => (
+              filteredTodos.map((t) => (
                 <Card key={t.id} variant="outlined" sx={{ borderRadius: 1 }}>
                   <CardHeader
                     title={
@@ -246,7 +299,7 @@ export function MainPage() {
                         </IconButton>
                         <IconButton
                           aria-label="delete todo"
-                          onClick={() => onDelete(t.id)}
+                          onClick={() => openDeleteDialog(t.id)}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -259,6 +312,31 @@ export function MainPage() {
           </Stack>
         </Stack>
       </Box>
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={closeDeleteDialog}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{ sx: { borderRadius: 0 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 900, color: 'text.primary' }}>
+          ยืนยันการลบ
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary">
+            ยืนยันการลบรายการนี้ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button variant="text" onClick={closeDeleteDialog}>
+            Cancel
+          </Button>
+          <Button variant="contained" color="error" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={isEditDialogOpen}

@@ -1,7 +1,19 @@
 import { useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { slide as BurgerMenu } from 'react-burger-menu'
-import { AppBar, Avatar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  MenuList,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import InfoIcon from '@mui/icons-material/Info'
@@ -106,12 +118,23 @@ export function AppShell() {
           pageWrapId="page-wrap"
         >
           <div className="menu-title">Navigation</div>
-          {menuItems.map((item) => (
-            <button key={item.label} className="menu-item-link" onClick={item.onClick}>
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <MenuList sx={{ py: 0 }}>
+            {menuItems.map((item) => (
+              <MenuItem
+                key={item.label}
+                onClick={item.onClick}
+                sx={{
+                  py: 1.5,
+                  gap: 1,
+                  alignItems: 'center',
+                  '& .MuiListItemIcon-root': { color: 'inherit' },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </MenuItem>
+            ))}
+          </MenuList>
         </BurgerMenu>
       ) : null}
 

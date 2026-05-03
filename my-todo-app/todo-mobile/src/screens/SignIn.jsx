@@ -43,7 +43,11 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
 
       await SecureStore.setItemAsync('token', data.token)
       await SecureStore.setItemAsync('firstName', data.firstName ?? '')
-      onSignInSuccess(data.firstName ?? '')
+      onSignInSuccess?.(data.firstName ?? '')
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainDrawer' }],
+      })
     } catch (error) {
       Alert.alert('Login Failed', 'เลขประจำตัวประชาชนหรือรหัสผ่านไม่ถูกต้อง')
     } finally {

@@ -52,7 +52,7 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       setLoading(true)
-      await api.post('/api/users/register', {
+      await api.post('/api/users', {
         nationalId: form.nationalId,
         title: form.title.trim(),
         firstName: form.firstName.trim(),

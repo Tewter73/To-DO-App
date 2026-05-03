@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, ScrollView, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import {
@@ -9,6 +9,7 @@ import {
   HelperText,
   Paragraph,
   Portal,
+  Searchbar,
   Text,
   TextInput,
   Title,
@@ -36,6 +37,7 @@ function toLocalApiDateTime(dateValue) {
 export default function MainScreen({ firstName }) {
   const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [createName, setCreateName] = useState('')
@@ -52,6 +54,12 @@ export default function MainScreen({ firstName }) {
   const createNameError = validateActivityName(createName)
   const editNameError = validateActivityName(editName)
 
+  const filteredActivities = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase()
+    if (!keyword) return activities
+    return activities.filter((item) => item.name.toLowerCase().includes(keyword))
+  }, [activities, searchTerm])
+
   const updateDatePart = (targetDate, selectedDate) => {
     const next = new Date(targetDate)
     next.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
@@ -67,8 +75,13 @@ export default function MainScreen({ firstName }) {
   const fetchActivities = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get('/api/activities')
-      setActivities(data)
+      const response = await api.get('/api/activities')
+      const { data, status } = response
+      if (status === 204 || data == null || data === '') {
+        setActivities([])
+      } else {
+        setActivities(Array.isArray(data) ? data : [])
+      }
     } catch (error) {
       setActivities([])
       Alert.alert('Error', 'ไม่สามารถโหลดรายการงานได้')
@@ -178,6 +191,17 @@ export default function MainScreen({ firstName }) {
             ) : null}
           </Card.Content>
         </Card>
+        <Searchbar
+          placeholder="ค้นหางาน"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          style={{
+            marginBottom: 16,
+            borderRadius: layout.cardRadius,
+            backgroundColor: palette.surface,
+          }}
+          inputStyle={{ fontWeight: '500' }}
+        />
         {loading ? <Text style={{ color: palette.textSecondary }}>กำลังโหลด...</Text> : null}
         {!loading && activities.length === 0 ? (
           <Card style={{ borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.soft }}>
@@ -186,7 +210,16 @@ export default function MainScreen({ firstName }) {
             </Card.Content>
           </Card>
         ) : null}
-        {activities.map((item) => (
+        {!loading && activities.length > 0 && filteredActivities.length === 0 ? (
+          <Card style={{ borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.soft }}>
+            <Card.Content style={{ alignItems: 'center', paddingVertical: 32 }}>
+              <Text style={{ color: palette.textSecondary, fontSize: 16, textAlign: 'center' }}>
+                ไม่พบงานที่ตรงกับคำค้นหา
+              </Text>
+            </Card.Content>
+          </Card>
+        ) : null}
+        {filteredActivities.map((item) => (
           <Card key={item.id} style={{ marginBottom: 16, borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.soft }}>
             <Card.Content style={{ padding: 18 }}>
               <Paragraph style={{ fontSize: 18, fontWeight: '700', color: palette.textPrimary }}>{item.name}</Paragraph>
