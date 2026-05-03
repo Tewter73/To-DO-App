@@ -28,13 +28,13 @@ export const theme = createTheme({
     borderRadius: 16,
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Chakra Petch", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
-      fontWeight: 900,
+      fontWeight: 700,
       letterSpacing: '-0.02em',
     },
     h5: {
-      fontWeight: 800,
+      fontWeight: 700,
       letterSpacing: '-0.01em',
     },
     h6: {
@@ -97,12 +97,16 @@ export const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: 12,
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#F8FAFC', // Light gray background for unfilled inputs
+            transition: 'background-color 0.2s',
             '& fieldset': {
               borderColor: '#E2E8F0',
             },
             '&:hover fieldset': {
               borderColor: '#94A3B8',
+            },
+            '&.Mui-focused': {
+              backgroundColor: '#FFFFFF',
             },
             '&.Mui-focused fieldset': {
               borderColor: '#4338CA',

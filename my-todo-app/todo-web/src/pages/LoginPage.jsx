@@ -90,8 +90,8 @@ export function LoginPage() {
                 inputMode="numeric"
                 fullWidth
                 required
-                error={!!nationalIdError}
-                helperText={nationalIdError}
+                error={nationalId !== '' && !!nationalIdError}
+                helperText={nationalId !== '' ? nationalIdError : ''}
               />
               <TextField
                 label="Password"
@@ -101,8 +101,8 @@ export function LoginPage() {
                 autoComplete="current-password"
                 fullWidth
                 required
-                error={!!passwordError}
-                helperText={passwordError}
+                error={password !== '' && !!passwordError}
+                helperText={password !== '' ? passwordError : ''}
                 slotProps={{
                   input: {
                     endAdornment: (
