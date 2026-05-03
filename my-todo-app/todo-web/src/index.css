@@ -11,10 +11,13 @@ body {
 .bm-overlay {
   top: 0 !important;
   background: rgba(0, 0, 0, 0.35) !important;
+  z-index: 1299 !important;
 }
 
 .bm-menu-wrap {
   top: 0 !important;
+  height: 100% !important;
+  z-index: 1300 !important;
 }
 
 .bm-menu {

@@ -49,7 +49,7 @@ describe('Mobile validation', () => {
     expect(getByText('รหัสผ่านต้องอย่างน้อย 8 ตัว และห้ามมีช่องว่าง')).toBeTruthy()
     
     // Simulate submit
-    fireEvent.press(getByRole('button', { name: 'Submit' }))
+    fireEvent.press(getByRole('button', { name: 'Sign In' }))
     // api should not be called
     expect(api.post).not.toHaveBeenCalled()
   })
@@ -70,7 +70,7 @@ describe('Mobile validation', () => {
     expect(getByText('นามสกุลต้องมีอย่างน้อย 2 ตัวอักษร')).toBeTruthy()
     
     // Simulate submit
-    fireEvent.press(getByRole('button', { name: 'สมัครสมาชิก' }))
+    fireEvent.press(getByRole('button', { name: 'Create Account' }))
     // api should not be called
     expect(api.post).not.toHaveBeenCalled()
   })
@@ -94,7 +94,7 @@ describe('Mobile API and storage interaction', () => {
     const inputs = getAllByTestId('text-input-outlined')
     fireEvent.changeText(inputs[0], '1234567890123')
     fireEvent.changeText(inputs[1], 'password123')
-    fireEvent.press(getByRole('button', { name: 'Submit' }))
+    fireEvent.press(getByRole('button', { name: 'Sign In' }))
 
     await waitFor(() => {
       expect(SecureStore.setItemAsync).toHaveBeenCalledWith('token', 'jwt-token')

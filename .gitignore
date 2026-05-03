@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+**/.env
 
 # User-specific files
 *.rsuser
@@ -34,6 +35,10 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+**/dist/
+**/node_modules/
+**/bin/
+**/obj/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -486,5 +491,6 @@ $RECYCLE.BIN/
 # ASP.NET Core app settings (sensitive/local config)
 appsettings.Development.json
 appsettings.json
+**/appsettings.json
 my-todo-app/todo-backend/appsettings.json
 my-todo-app/todo-backend/bin/Debug/net8.0/appsettings.json

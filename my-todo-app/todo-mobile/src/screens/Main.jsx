@@ -16,6 +16,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker'
 import api from '../api'
 import { validateActivityName } from '../utils/validation'
+import { layout, palette, shadows } from '../ui/design'
 
 function formatDateTime(value) {
   if (!value) return '-'
@@ -157,22 +158,44 @@ export default function MainScreen({ firstName }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 96 }}>
-        <Title style={{ marginBottom: 12 }}>To-Do Activities</Title>
-        {firstName ? <Text style={{ marginBottom: 8 }}>กำลังใช้งานโดย: {firstName}</Text> : null}
-        {loading ? <Text>กำลังโหลด...</Text> : null}
-        {!loading && activities.length === 0 ? <Text>ไม่มีรายการงาน</Text> : null}
+    <View style={{ flex: 1, backgroundColor: palette.background }}>
+      <ScrollView contentContainerStyle={{ padding: layout.pagePadding, paddingBottom: 96 }}>
+        <Card
+          style={{
+            marginBottom: 24,
+            borderRadius: layout.cardRadius,
+            backgroundColor: palette.primary,
+            ...shadows.medium,
+          }}
+        >
+          <Card.Content style={{ padding: 24 }}>
+            <Text variant="labelLarge" style={{ color: '#E0E7FF', letterSpacing: 1 }}>
+              TASK MANAGEMENT
+            </Text>
+            <Title style={{ color: '#FFFFFF', marginTop: 4, fontSize: 26, fontWeight: '800' }}>To-Do Activities</Title>
+            {firstName ? (
+              <Text style={{ marginTop: 8, color: '#C7D2FE', fontWeight: '500' }}>Signed in as {firstName}</Text>
+            ) : null}
+          </Card.Content>
+        </Card>
+        {loading ? <Text style={{ color: palette.textSecondary }}>กำลังโหลด...</Text> : null}
+        {!loading && activities.length === 0 ? (
+          <Card style={{ borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.soft }}>
+            <Card.Content style={{ alignItems: 'center', paddingVertical: 32 }}>
+              <Text style={{ color: palette.textSecondary, fontSize: 16, textAlign: 'center' }}>ยังไม่มีรายการงาน กดปุ่ม + เพื่อเพิ่มงานแรก</Text>
+            </Card.Content>
+          </Card>
+        ) : null}
         {activities.map((item) => (
-          <Card key={item.id} style={{ marginBottom: 12 }}>
-            <Card.Content>
-              <Paragraph style={{ fontSize: 16, fontWeight: '700' }}>{item.name}</Paragraph>
-              <Text style={{ marginTop: 4 }}>When: {formatDateTime(item.when)}</Text>
-              <View style={{ marginTop: 12, flexDirection: 'row', gap: 8 }}>
-                <Button mode="outlined" onPress={() => openEditDialog(item)}>
+          <Card key={item.id} style={{ marginBottom: 16, borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.soft }}>
+            <Card.Content style={{ padding: 18 }}>
+              <Paragraph style={{ fontSize: 18, fontWeight: '700', color: palette.textPrimary }}>{item.name}</Paragraph>
+              <Text style={{ marginTop: 6, color: palette.textSecondary, fontWeight: '500' }}>Schedule: {formatDateTime(item.when)}</Text>
+              <View style={{ marginTop: 16, flexDirection: 'row', gap: 12 }}>
+                <Button mode="outlined" onPress={() => openEditDialog(item)} style={{ borderRadius: 10, flex: 1 }} labelStyle={{ fontWeight: '600' }}>
                   Edit
                 </Button>
-                <Button mode="contained-tonal" onPress={() => deleteActivity(item.id)}>
+                <Button mode="contained-tonal" buttonColor="#FEE2E2" textColor={palette.danger} onPress={() => deleteActivity(item.id)} style={{ borderRadius: 10, flex: 1 }} labelStyle={{ fontWeight: '600' }}>
                   Delete
                 </Button>
               </View>
@@ -184,6 +207,7 @@ export default function MainScreen({ firstName }) {
       <Portal>
         <Dialog
           visible={isCreateOpen}
+          style={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}
           onDismiss={() => {
             setIsCreateOpen(false)
             setShowCreateDatePicker(false)
@@ -198,7 +222,7 @@ export default function MainScreen({ firstName }) {
               value={createName}
               onChangeText={setCreateName}
               maxLength={100}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
             <HelperText type="error" visible={!!createNameError}>
               {createNameError}
@@ -253,6 +277,7 @@ export default function MainScreen({ firstName }) {
 
         <Dialog
           visible={isEditOpen}
+          style={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}
           onDismiss={() => {
             setIsEditOpen(false)
             setShowEditDatePicker(false)
@@ -267,7 +292,7 @@ export default function MainScreen({ firstName }) {
               value={editName}
               onChangeText={setEditName}
               maxLength={100}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
             <HelperText type="error" visible={!!editNameError}>
               {editNameError}
@@ -321,7 +346,12 @@ export default function MainScreen({ firstName }) {
         </Dialog>
       </Portal>
 
-      <FAB icon="plus" style={{ position: 'absolute', right: 16, bottom: 16 }} onPress={() => setIsCreateOpen(true)} />
+      <FAB
+        icon="plus"
+        style={{ position: 'absolute', right: 16, bottom: 16, backgroundColor: palette.primary }}
+        color="#FFFFFF"
+        onPress={() => setIsCreateOpen(true)}
+      />
     </View>
   )
 }

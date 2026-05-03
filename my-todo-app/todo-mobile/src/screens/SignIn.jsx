@@ -8,6 +8,7 @@ import {
   validateNationalId,
   validatePassword,
 } from '../utils/validation'
+import { layout, palette, shadows } from '../ui/design'
 
 export default function SignInScreen({ onSignInSuccess, navigation }) {
   const [nationalId, setNationalId] = useState('')
@@ -55,19 +56,28 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={{ flex: 1 }} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 20}
     >
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1, padding: 16, justifyContent: 'center' }}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, padding: layout.pagePadding, justifyContent: 'center', backgroundColor: palette.background }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Card style={{ marginVertical: 20 }}>
-          <Card.Content>
-            <Title style={{ marginBottom: 16 }}>Sign In</Title>
+        <View style={{ marginBottom: 24, paddingHorizontal: 4 }}>
+          <Text variant="displaySmall" style={{ fontWeight: '900', color: palette.primary }}>
+            Welcome back
+          </Text>
+          <Text variant="titleMedium" style={{ marginTop: 8, color: palette.textSecondary }}>
+            Sign in to manage your activity plan and daily schedule.
+          </Text>
+        </View>
+
+        <Card style={{ marginVertical: 8, borderRadius: layout.cardRadius, backgroundColor: palette.surface, ...shadows.medium }}>
+          <Card.Content style={{ padding: 20 }}>
+            <Title style={{ marginBottom: 14 }}>Sign In</Title>
 
             <LabelError error={displayError(nationalIdError, nationalId)} />
             <TextInput
@@ -79,7 +89,7 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
               keyboardType="numeric"
               autoCapitalize="none"
               autoCorrect={false}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
             />
 
             <LabelError error={displayError(passwordError, password)} />
@@ -98,29 +108,32 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
                   onPress={() => setSecureText((prev) => !prev)}
                 />
               }
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 16, backgroundColor: '#FFFFFF' }}
             />
 
             <Button
               mode="contained"
               onPress={handleSubmit}
               loading={loading}
-              style={{ marginTop: 8 }}
+              style={{ marginTop: 12, borderRadius: 12 }}
+              contentStyle={{ paddingVertical: 8 }}
+              labelStyle={{ fontSize: 16, fontWeight: '700' }}
             >
-              Submit
+              Sign In
             </Button>
-            <Text variant="bodySmall" style={{ marginTop: 16, textAlign: 'center' }}>
-              ยังไม่มีบัญชี? กดสมัครสมาชิกได้ทันที
+            <Text variant="bodyMedium" style={{ marginTop: 24, textAlign: 'center', color: palette.textSecondary }}>
+              ยังไม่มีบัญชี?
             </Text>
             <Button
-              mode="text"
+              mode="outlined"
               onPress={() => navigation.navigate('Register')}
-              style={{ marginTop: 4 }}
+              style={{ marginTop: 12, borderRadius: 12 }}
+              contentStyle={{ paddingVertical: 6 }}
             >
-              สมัครสมาชิก
+              สร้างบัญชีใหม่
             </Button>
-            <Button mode="text" onPress={() => navigation.navigate('ForgotPassword')}>
-              ลืมรหัสผ่าน
+            <Button mode="text" onPress={() => navigation.navigate('ForgotPassword')} style={{ marginTop: 8 }}>
+              ลืมรหัสผ่าน?
             </Button>
           </Card.Content>
         </Card>
