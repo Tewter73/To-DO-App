@@ -5,7 +5,7 @@ import * as SecureStore from 'expo-secure-store'
 // WARNING: DO NOT USE localhost FOR MOBILE API BASE URL.
 // Use your machine LAN IP instead, e.g. http://192.168.x.x:5555
 // =========================================================
-const API_BASE_URL = 'http://192.168.1.27:5555'
+const API_BASE_URL = 'http://192.168.1.43:5555'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
