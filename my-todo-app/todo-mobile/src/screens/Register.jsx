@@ -46,6 +46,7 @@ export default function RegisterScreen({ navigation }) {
   const onSubmit = async () => {
     setSubmitted(true)
     if (!isFormValid) {
+      Alert.alert('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลสมัครสมาชิกให้ครบและถูกต้อง')
       return
     }
 

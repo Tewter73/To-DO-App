@@ -44,6 +44,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   const onSubmit = async () => {
     setSubmitted(true)
     if (!isFormValid) {
+      Alert.alert('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลให้ครบและถูกต้องก่อนบันทึกรหัสผ่านใหม่')
       return
     }
 

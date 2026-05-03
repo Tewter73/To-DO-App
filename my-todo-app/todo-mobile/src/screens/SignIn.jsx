@@ -30,6 +30,7 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
   const handleSubmit = async () => {
     setSubmitted(true)
     if (!isFormValid) {
+      Alert.alert('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกเลขบัตรประชาชนและรหัสผ่านให้ถูกต้อง')
       return
     }
 
