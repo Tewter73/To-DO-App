@@ -96,8 +96,8 @@ export function RegisterPage() {
                 onChange={onChange('nationalId')}
                 required
                 fullWidth
-                error={!!errors.nationalId}
-                helperText={errors.nationalId}
+                error={form.nationalId !== '' && !!errors.nationalId}
+                helperText={form.nationalId !== '' ? errors.nationalId : ''}
               />
               <TextField
                 select
@@ -118,8 +118,8 @@ export function RegisterPage() {
                 onChange={onChange('firstName')}
                 required
                 fullWidth
-                error={!!errors.firstName}
-                helperText={errors.firstName}
+                error={form.firstName !== '' && !!errors.firstName}
+                helperText={form.firstName !== '' ? errors.firstName : ''}
               />
               <TextField
                 label="Last Name"
@@ -127,8 +127,8 @@ export function RegisterPage() {
                 onChange={onChange('lastName')}
                 required
                 fullWidth
-                error={!!errors.lastName}
-                helperText={errors.lastName}
+                error={form.lastName !== '' && !!errors.lastName}
+                helperText={form.lastName !== '' ? errors.lastName : ''}
               />
               <TextField
                 label="Password"
@@ -137,8 +137,8 @@ export function RegisterPage() {
                 onChange={onChange('password')}
                 required
                 fullWidth
-                error={!!errors.password}
-                helperText={errors.password}
+                error={form.password !== '' && !!errors.password}
+                helperText={form.password !== '' ? errors.password : ''}
                 slotProps={{
                   input: {
                     endAdornment: (

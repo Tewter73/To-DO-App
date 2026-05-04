@@ -92,8 +92,8 @@ export function ForgotPasswordPage() {
                 onChange={onChange('nationalId')}
                 required
                 fullWidth
-                error={!!errors.nationalId}
-                helperText={errors.nationalId}
+                error={form.nationalId !== '' && !!errors.nationalId}
+                helperText={form.nationalId !== '' ? errors.nationalId : ''}
               />
               <TextField
                 label="First Name"
@@ -101,8 +101,8 @@ export function ForgotPasswordPage() {
                 onChange={onChange('firstName')}
                 required
                 fullWidth
-                error={!!errors.firstName}
-                helperText={errors.firstName}
+                error={form.firstName !== '' && !!errors.firstName}
+                helperText={form.firstName !== '' ? errors.firstName : ''}
               />
               <TextField
                 label="Last Name"
@@ -110,8 +110,8 @@ export function ForgotPasswordPage() {
                 onChange={onChange('lastName')}
                 required
                 fullWidth
-                error={!!errors.lastName}
-                helperText={errors.lastName}
+                error={form.lastName !== '' && !!errors.lastName}
+                helperText={form.lastName !== '' ? errors.lastName : ''}
               />
               <TextField
                 label="New Password"
@@ -120,8 +120,8 @@ export function ForgotPasswordPage() {
                 onChange={onChange('newPassword')}
                 required
                 fullWidth
-                error={!!errors.newPassword}
-                helperText={errors.newPassword}
+                error={form.newPassword !== '' && !!errors.newPassword}
+                helperText={form.newPassword !== '' ? errors.newPassword : ''}
                 slotProps={{
                   input: {
                     endAdornment: (

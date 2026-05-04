@@ -72,22 +72,32 @@ function AppRoutes() {
   )
 }
 
+import { ThemeProvider } from '@mui/material/styles'
+import '@fontsource/chakra-petch/300.css'
+import '@fontsource/chakra-petch/400.css'
+import '@fontsource/chakra-petch/500.css'
+import '@fontsource/chakra-petch/600.css'
+import '@fontsource/chakra-petch/700.css'
+import { theme } from './theme.js'
+
 export default function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th">
-      <BrowserRouter>
-        <CssBaseline />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 2500,
-            success: { style: { background: '#16a34a', color: '#fff' } },
-            error: { style: { background: '#dc2626', color: '#fff' } },
-          }}
-        />
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="th">
+        <BrowserRouter>
+          <CssBaseline />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 2500,
+              success: { style: { background: '#10B981', color: '#fff', borderRadius: '12px', padding: '16px' } },
+              error: { style: { background: '#EF4444', color: '#fff', borderRadius: '12px', padding: '16px' } },
+            }}
+          />
 
-        <AppRoutes />
-      </BrowserRouter>
-    </LocalizationProvider>
+          <AppRoutes />
+        </BrowserRouter>
+      </LocalizationProvider>
+    </ThemeProvider>
   )
 }

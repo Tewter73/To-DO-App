@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, ScrollView, View } from 'react-native'
+import { Alert, ScrollView, View, Platform, Keyboard } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import {
   Button,
@@ -53,6 +53,24 @@ export default function MainScreen({ firstName }) {
   const [showEditTimePicker, setShowEditTimePicker] = useState(false)
   const createNameError = validateActivityName(createName)
   const editNameError = validateActivityName(editName)
+
+  const [kbHeight, setKbHeight] = useState(0)
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKbHeight(e.endCoordinates.height)
+    })
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKbHeight(0)
+    })
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
+  }, [])
 
   const filteredActivities = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
@@ -240,142 +258,154 @@ export default function MainScreen({ firstName }) {
       <Portal>
         <Dialog
           visible={isCreateOpen}
-          style={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}
+          style={{ 
+            borderRadius: 16, 
+            backgroundColor: '#FFFFFF',
+            transform: [{ translateY: kbHeight > 0 ? -(kbHeight / 2.5) : 0 }]
+          }}
           onDismiss={() => {
             setIsCreateOpen(false)
             setShowCreateDatePicker(false)
             setShowCreateTimePicker(false)
           }}
         >
-          <Dialog.Title>เพิ่มงาน</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="ชื่องาน"
-              mode="outlined"
-              value={createName}
-              onChangeText={setCreateName}
-              maxLength={100}
-              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
-            />
-            <HelperText type="error" visible={!!createNameError}>
-              {createNameError}
-            </HelperText>
-            <Button mode="outlined" onPress={() => setShowCreateDatePicker(true)} style={{ marginBottom: 8 }}>
-              เลือกวันที่: {createWhen.toLocaleDateString()}
-            </Button>
-            <Button mode="outlined" onPress={() => setShowCreateTimePicker(true)}>
-              เลือกเวลา: {createWhen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Button>
-            {showCreateDatePicker ? (
-              <DateTimePicker
-                value={createWhen}
-                mode="date"
-                onChange={(_event, selectedDate) => {
+          <View>
+            <Dialog.Title>เพิ่มงาน</Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                label="ชื่องาน"
+                mode="outlined"
+                value={createName}
+                onChangeText={setCreateName}
+                maxLength={100}
+                style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
+              />
+              <HelperText type="error" visible={!!createNameError}>
+                {createNameError}
+              </HelperText>
+              <Button mode="outlined" onPress={() => setShowCreateDatePicker(true)} style={{ marginBottom: 8 }}>
+                เลือกวันที่: {createWhen.toLocaleDateString()}
+              </Button>
+              <Button mode="outlined" onPress={() => setShowCreateTimePicker(true)}>
+                เลือกเวลา: {createWhen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Button>
+              {showCreateDatePicker ? (
+                <DateTimePicker
+                  value={createWhen}
+                  mode="date"
+                  onChange={(_event, selectedDate) => {
+                    setShowCreateDatePicker(false)
+                    if (selectedDate) {
+                      setCreateWhen((prev) => updateDatePart(prev, selectedDate))
+                    }
+                  }}
+                />
+              ) : null}
+              {showCreateTimePicker ? (
+                <DateTimePicker
+                  value={createWhen}
+                  mode="time"
+                  is24Hour={true}
+                  onChange={(_event, selectedTime) => {
+                    setShowCreateTimePicker(false)
+                    if (selectedTime) {
+                      setCreateWhen((prev) => updateTimePart(prev, selectedTime))
+                    }
+                  }}
+                />
+              ) : null}
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                onPress={() => {
+                  setIsCreateOpen(false)
                   setShowCreateDatePicker(false)
-                  if (selectedDate) {
-                    setCreateWhen((prev) => updateDatePart(prev, selectedDate))
-                  }
-                }}
-              />
-            ) : null}
-            {showCreateTimePicker ? (
-              <DateTimePicker
-                value={createWhen}
-                mode="time"
-                is24Hour={true}
-                onChange={(_event, selectedTime) => {
                   setShowCreateTimePicker(false)
-                  if (selectedTime) {
-                    setCreateWhen((prev) => updateTimePart(prev, selectedTime))
-                  }
                 }}
-              />
-            ) : null}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setIsCreateOpen(false)
-                setShowCreateDatePicker(false)
-                setShowCreateTimePicker(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onPress={createActivity} disabled={!!createNameError}>
-              Save
-            </Button>
-          </Dialog.Actions>
+              >
+                Cancel
+              </Button>
+              <Button mode="contained" onPress={createActivity} disabled={!!createNameError} style={{ borderRadius: 8 }}>
+                Save
+              </Button>
+            </Dialog.Actions>
+          </View>
         </Dialog>
 
         <Dialog
           visible={isEditOpen}
-          style={{ borderRadius: 0, backgroundColor: '#FFFFFF' }}
+          style={{ 
+            borderRadius: 16, 
+            backgroundColor: '#FFFFFF',
+            transform: [{ translateY: kbHeight > 0 ? -(kbHeight / 2.5) : 0 }]
+          }}
           onDismiss={() => {
             setIsEditOpen(false)
             setShowEditDatePicker(false)
             setShowEditTimePicker(false)
           }}
         >
-          <Dialog.Title>แก้ไขงาน</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="ชื่องาน"
-              mode="outlined"
-              value={editName}
-              onChangeText={setEditName}
-              maxLength={100}
-              style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
-            />
-            <HelperText type="error" visible={!!editNameError}>
-              {editNameError}
-            </HelperText>
-            <Button mode="outlined" onPress={() => setShowEditDatePicker(true)} style={{ marginBottom: 8 }}>
-              เลือกวันที่: {editWhen.toLocaleDateString()}
-            </Button>
-            <Button mode="outlined" onPress={() => setShowEditTimePicker(true)}>
-              เลือกเวลา: {editWhen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Button>
-            {showEditDatePicker ? (
-              <DateTimePicker
-                value={editWhen}
-                mode="date"
-                onChange={(_event, selectedDate) => {
+          <View>
+            <Dialog.Title>แก้ไขงาน</Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                label="ชื่องาน"
+                mode="outlined"
+                value={editName}
+                onChangeText={setEditName}
+                maxLength={100}
+                style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }}
+              />
+              <HelperText type="error" visible={!!editNameError}>
+                {editNameError}
+              </HelperText>
+              <Button mode="outlined" onPress={() => setShowEditDatePicker(true)} style={{ marginBottom: 8 }}>
+                เลือกวันที่: {editWhen.toLocaleDateString()}
+              </Button>
+              <Button mode="outlined" onPress={() => setShowEditTimePicker(true)}>
+                เลือกเวลา: {editWhen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Button>
+              {showEditDatePicker ? (
+                <DateTimePicker
+                  value={editWhen}
+                  mode="date"
+                  onChange={(_event, selectedDate) => {
+                    setShowEditDatePicker(false)
+                    if (selectedDate) {
+                      setEditWhen((prev) => updateDatePart(prev, selectedDate))
+                    }
+                  }}
+                />
+              ) : null}
+              {showEditTimePicker ? (
+                <DateTimePicker
+                  value={editWhen}
+                  mode="time"
+                  is24Hour={true}
+                  onChange={(_event, selectedTime) => {
+                    setShowEditTimePicker(false)
+                    if (selectedTime) {
+                      setEditWhen((prev) => updateTimePart(prev, selectedTime))
+                    }
+                  }}
+                />
+              ) : null}
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                onPress={() => {
+                  setIsEditOpen(false)
                   setShowEditDatePicker(false)
-                  if (selectedDate) {
-                    setEditWhen((prev) => updateDatePart(prev, selectedDate))
-                  }
-                }}
-              />
-            ) : null}
-            {showEditTimePicker ? (
-              <DateTimePicker
-                value={editWhen}
-                mode="time"
-                is24Hour={true}
-                onChange={(_event, selectedTime) => {
                   setShowEditTimePicker(false)
-                  if (selectedTime) {
-                    setEditWhen((prev) => updateTimePart(prev, selectedTime))
-                  }
                 }}
-              />
-            ) : null}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setIsEditOpen(false)
-                setShowEditDatePicker(false)
-                setShowEditTimePicker(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onPress={saveEdit} disabled={!!editNameError}>
-              Save
-            </Button>
-          </Dialog.Actions>
+              >
+                Cancel
+              </Button>
+              <Button mode="contained" onPress={saveEdit} disabled={!!editNameError} style={{ borderRadius: 8 }}>
+                Save
+              </Button>
+            </Dialog.Actions>
+          </View>
         </Dialog>
       </Portal>
 

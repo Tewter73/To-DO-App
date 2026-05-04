@@ -30,7 +30,7 @@ const navTheme = {
 function CustomDrawerContent(props) {
   const { onSignOut, firstName } = props
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ paddingTop: 0 }}>
+    <DrawerContentScrollView {...props}>
       <View style={{ padding: 20, backgroundColor: '#FFFFFF' }}>
         <Avatar.Text
           size={46}

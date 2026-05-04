@@ -216,8 +216,8 @@ export function MainPage() {
                 value={newTaskName}
                 onChange={(event) => setNewTaskName(event.target.value)}
                 fullWidth
-                error={!!newTaskNameError}
-                helperText={newTaskNameError}
+                error={newTaskName !== '' && !!newTaskNameError}
+                helperText={newTaskName !== '' ? newTaskNameError : ''}
               />
               <MobileDateTimePicker
                 label="วันที่และเวลา"
@@ -359,8 +359,8 @@ export function MainPage() {
               setEditTask((prev) => ({ ...prev, title: e.target.value }))
             }
             required
-            error={!!editTaskNameError}
-            helperText={editTaskNameError}
+            error={editTask.title !== '' && !!editTaskNameError}
+            helperText={editTask.title !== '' ? editTaskNameError : ''}
           />
           <MobileDateTimePicker
             label="วันเวลาที่บันทึก"
