@@ -71,12 +71,9 @@ export default function SignInScreen({ onSignInSuccess, navigation }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ marginBottom: 24, paddingHorizontal: 4 }}>
-          <Text variant="displaySmall" style={{ fontWeight: '900', color: palette.primary }}>
-            Welcome back
-          </Text>
-          <Text variant="titleMedium" style={{ marginTop: 8, color: palette.textSecondary }}>
-            Sign in to manage your activity plan and daily schedule.
+        <View style={{ marginBottom: 32, paddingHorizontal: 4, alignItems: 'center' }}>
+          <Text variant="displayMedium" style={{ fontWeight: '900', color: palette.primary }}>
+            To-Do App
           </Text>
         </View>
 
