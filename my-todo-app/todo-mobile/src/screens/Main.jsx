@@ -1,6 +1,11 @@
+// =========================================================
+// 🌟 เครื่องมือและไลบรารีที่ใช้งาน (Frontend Mobile)
+// =========================================================
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Alert, ScrollView, View, Platform, Keyboard } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native'
+import { Alert, ScrollView, View, Platform, Keyboard } from 'react-native' // ใช้ Component พื้นฐานของ React Native
+import { useFocusEffect } from '@react-navigation/native' // จัดการ Lifecycle เวลากลับเข้ามาหน้าจอเดิม (React Navigation)
+
+// ใช้ React Native Paper สำหรับ UI สำเร็จรูปของมือถือโดยเฉพาะ (ห้ามใช้ Material UI ของเว็บ)
 import {
   Button,
   Card,
@@ -14,8 +19,8 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import api from '../api'
+import DateTimePicker from '@react-native-community/datetimepicker' // ใช้ Date/Time Picker พื้นฐานของเครื่องมือถือ iOS/Android
+import api from '../api' // ใช้ Axios สำหรับยิง Request (ตั้งค่าไว้ที่ src/api.js)
 import { validateActivityName } from '../utils/validation'
 import { layout, palette, shadows } from '../ui/design'
 
@@ -56,6 +61,11 @@ export default function MainScreen({ firstName }) {
 
   const [kbHeight, setKbHeight] = useState(0)
 
+  // =========================================================
+  // 🌟 1. การดักจับแป้นพิมพ์ (Keyboard Avoiding & Offset)
+  // =========================================================
+  // โค้ดส่วนนี้จะตรวจจับเวลาแป้นพิมพ์เด้งขึ้นมา แล้วทำการเลื่อนกล่อง Dialog (Add/Edit) ขึ้นไปด้านบน
+  // เพื่อไม่ให้แป้นพิมพ์บังปุ่มกด Save / Cancel (แก้ปัญหา UI บนหน้าจอเล็ก)
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
@@ -125,16 +135,29 @@ export default function MainScreen({ firstName }) {
     }
 
     try {
-      await api.post('/api/activities', {
+      const res = await api.post('/api/activities', {
         name: createName.trim(),
         when: toLocalApiDateTime(createWhen),
+      })
+      // =========================================================
+      // 🌟 2. อัปเดตข้อมูลทันทีแบบไม่กระตุก (Direct State Mutation)
+      // =========================================================
+      // แทนที่จะดึงข้อมูลใหม่ทั้งหมดผ่าน API ซึ่งจะทำให้หน้าจอกระพริบและเปลืองเน็ต
+      // เราจะเอาข้อมูลที่เพิ่งสร้างยัดลง State `activities` โดยตรง และสั่งเรียงลำดับเวลาใหม่ทันที
+      setActivities((prev) => {
+        const newData = {
+          id: res.data.id,
+          name: createName.trim(),
+          when: toLocalApiDateTime(createWhen)
+        }
+        const updated = [...prev, newData]
+        return updated.sort((a, b) => new Date(a.when) - new Date(b.when))
       })
       setIsCreateOpen(false)
       setCreateName('')
       setCreateWhen(new Date())
       setShowCreateDatePicker(false)
       setShowCreateTimePicker(false)
-      await fetchActivities()
     } catch (error) {
       Alert.alert('Error', 'ไม่สามารถเพิ่มงานได้')
     }
@@ -160,11 +183,11 @@ export default function MainScreen({ firstName }) {
         name: editName.trim(),
         when: toLocalApiDateTime(editWhen),
       })
+      setActivities((prev) => prev.map((t) => t.id === editId ? { ...t, name: editName.trim(), when: toLocalApiDateTime(editWhen) } : t).sort((a, b) => new Date(a.when) - new Date(b.when)))
       setIsEditOpen(false)
       setEditId(null)
       setShowEditDatePicker(false)
       setShowEditTimePicker(false)
-      await fetchActivities()
     } catch (error) {
       Alert.alert('Error', 'ไม่สามารถแก้ไขงานได้')
     }
@@ -179,7 +202,7 @@ export default function MainScreen({ firstName }) {
         onPress: async () => {
           try {
             await api.delete(`/api/activities/${id}`)
-            await fetchActivities()
+            setActivities((prev) => prev.filter((t) => t.id !== id))
           } catch (error) {
             Alert.alert('Error', 'ไม่สามารถลบงานได้')
           }
