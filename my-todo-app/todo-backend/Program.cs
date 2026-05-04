@@ -116,7 +116,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseCors();
+app.UseCors("AllowAll");
 
 // ลำดับสำคัญ: Authentication ก่อน Authorization — ให้ระบบรู้ Claims ก่อนตรวจ [Authorize]
 app.UseAuthentication();
