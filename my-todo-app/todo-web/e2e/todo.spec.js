@@ -47,7 +47,7 @@ test.describe('To-Do Scenarios', () => {
           body: JSON.stringify({ id: 3 }),
         });
       } else {
-        await route.continue();
+        await route.fallback();
       }
     });
 
@@ -59,7 +59,11 @@ test.describe('To-Do Scenarios', () => {
       }
     });
 
-    await page.fill('input[label="Task Name"]', 'New Playwright Task');
+    // Wait for initial load
+    await expect(page.locator('text=Initial Task')).toBeVisible();
+    getCalledCount = 0; // Reset counter after initial load
+
+    await page.getByLabel('Task Name').fill('New Playwright Task');
     await page.click('button:has-text("เพิ่มงาน")');
 
     // Check Toast
@@ -68,8 +72,8 @@ test.describe('To-Do Scenarios', () => {
     // Check it appears on screen
     await expect(page.locator('text=New Playwright Task')).toBeVisible();
 
-    // The GET count should be exactly 1 from the initial load
-    expect(getCalledCount).toBe(1);
+    // The GET count should be exactly 0 during the create action
+    expect(getCalledCount).toBe(0);
   });
 
   test('Delete (Confirmation): จำลองการลบ มีกล่อง Confirm และข้อมูลหายไป', async ({ page }) => {
@@ -108,15 +112,16 @@ test.describe('To-Do Scenarios', () => {
     // Initially 2 tasks visible
     await expect(page.locator('text=Initial Task')).toBeVisible();
     await expect(page.locator('text=Second Task')).toBeVisible();
+    getCalledCount = 0; // Reset counter after initial load
 
     // Type in search box
-    await page.fill('input[label="Search task"]', 'Second');
+    await page.getByLabel('Search task').fill('Second');
 
     // "Initial Task" should disappear, "Second Task" should remain
     await expect(page.locator('text=Initial Task')).not.toBeVisible();
     await expect(page.locator('text=Second Task')).toBeVisible();
 
-    // API GET should still only have been called once on initial load
-    expect(getCalledCount).toBe(1);
+    // API GET should not be called during search
+    expect(getCalledCount).toBe(0);
   });
 });

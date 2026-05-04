@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches: ['main']
   pull_request:
     branches: ['**']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   web-unit:
@@ -49,6 +53,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('my-todo-app/todo-web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install Playwright browser and deps
         run: npx playwright install --with-deps chromium

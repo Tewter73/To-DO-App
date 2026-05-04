@@ -69,7 +69,7 @@ test.describe('Auth Scenarios', () => {
     await page.goto('/main');
 
     // Open Burger Menu
-    await page.click('.bm-burger-button button');
+    await page.click('[aria-label="open navigation menu"]');
     
     // Click Sign Out
     await page.click('text=Sign Out');
