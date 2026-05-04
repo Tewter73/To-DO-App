@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store'
 import Constants from 'expo-constants'
 
 const getApiBaseUrl = () => {
-  // 🌟 บังคับใช้ IP Address แทน 127.0.0.1 ตาม Requirement ของอาจารย์
+  // 🌟 บังคับใช้ IP Address แทน localhost ตาม Requirement ของอาจารย์
   // ให้ตั้งค่าผ่าน EXPO_PUBLIC_API_BASE_URL ในไฟล์ .env หรือจะแก้บรรทัด fallback ด้านล่างตรงๆ ก็ได้
   if (process.env.EXPO_PUBLIC_API_BASE_URL) {
     return process.env.EXPO_PUBLIC_API_BASE_URL
