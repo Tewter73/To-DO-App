@@ -22,7 +22,10 @@ public sealed class ActivitiesController : ControllerBase
         _db = db;
     }
 
-    // อ่านรหัสผู้ใช้จาก ClaimTypes.Name (ตั้งค่าไว้ตอนสร้าง JWT ใน TokensController)
+    // =========================================================
+    // 🌟 1. ฟังก์ชันดึง ID ผู้ใช้ปัจจุบันจาก JWT Token
+    // =========================================================
+    // ถอดรหัส Token ดึงเอา Claim `UniqueName` (ซึ่งก็คือ UserId) เพื่อรับประกันว่าจะจัดการข้อมูลได้แค่ของตัวเองเท่านั้น
     private uint GetUserId()
     {
         var id = Convert.ToInt32(User?.Identity?.Name);
@@ -34,7 +37,10 @@ public sealed class ActivitiesController : ControllerBase
     {
         var userId = GetUserId();
 
-        // กรองเฉพาะแถวที่เป็นของผู้ใช้ปัจจุบัน เรียงตามเวลาที่กำหนด
+        // =========================================================
+        // 🌟 2. การดึงข้อมูลพร้อมจัดเรียง (Read & Sort)
+        // =========================================================
+        // กรองข้อมูลเฉพาะของ UserId นี้ และใช้ OrderBy(x => x.When) เพื่อเรียงจากเก่าไปใหม่ตาม Requirement
         var activities = await _db.Activity
             .Where(x => x.UserId == userId)
             .OrderBy(x => x.When)
@@ -87,7 +93,10 @@ public sealed class ActivitiesController : ControllerBase
         _db.Activity.Add(activity);
         await _db.SaveChangesAsync();
 
-        // Requirement อาจารย์: HTTP 200 OK พร้อม JSON { id } หลังสร้างสำเร็จ
+        // =========================================================
+        // 🌟 3. สร้างข้อมูลใหม่ (Create)
+        // =========================================================
+        // เมื่อบันทึกสำเร็จ คืนค่า HTTP 200 OK พร้อมไอดีที่เพิ่งสร้างในรูปแบบ JSON { id } ตาม Requirement เป๊ะๆ
         return Ok(new { id = activity.Id });
     }
 

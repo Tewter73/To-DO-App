@@ -1,7 +1,12 @@
+// =========================================================
+// 🌟 เครื่องมือและไลบรารีที่ใช้งาน (Frontend Web)
+// =========================================================
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
-import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom' // สำหรับจัดการ Routing และการเปลี่ยนหน้า
+import toast from 'react-hot-toast' // สำหรับแสดงป๊อปอัปแจ้งเตือน (Toast/Snackbar)
+import dayjs from 'dayjs' // สำหรับจัดการวันที่และเวลา
+
+// ใช้ Material UI (MUI) สำหรับโครงสร้าง UI สำเร็จรูปทั้งหมด ตามข้อกำหนดที่ห้ามเขียน HTML ดิบ
 import {
   Box,
   Button,
@@ -20,11 +25,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker'
-import EditIcon from '@mui/icons-material/Edit'
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker' // เครื่องมือเลือกวันที่และเวลาของ MUI
+import EditIcon from '@mui/icons-material/Edit' // ไอคอนจาก Material Design
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
-import { api } from '../lib/api.js'
+import { api } from '../lib/api.js' // ใช้ Axios (ตั้งค่าไว้ใน lib/api.js) ในการยิง HTTP Request
 import { clearAuthToken } from '../lib/auth.js'
 import { validateActivityName } from '../utils/validation.js'
 
@@ -53,6 +58,10 @@ export function MainPage() {
   const newTaskNameError = validateActivityName(newTaskName)
   const editTaskNameError = validateActivityName(editTask.title)
 
+  // =========================================================
+  // 🌟 1. การแปลงข้อมูล (Normalization)
+  // =========================================================
+  // แปลงข้อมูลที่ได้จาก API ให้มีโครงสร้างที่ Component อื่นๆ ในหน้าใช้อ่านได้ง่ายขึ้น
   const normalizedTodos = useMemo(
     () =>
       todos.map((item) => ({
@@ -63,6 +72,10 @@ export function MainPage() {
     [todos],
   )
 
+  // =========================================================
+  // 🌟 2. ระบบค้นหา (Search Filter ฝั่ง Client)
+  // =========================================================
+  // กรองข้อมูลจาก normalizedTodos ด้วย JavaScript ล้วนๆ (ไม่ต้องยิง API ใหม่) ตามข้อกำหนดอาจารย์
   const filteredTodos = useMemo(() => {
     const keyword = searchTerm.trim().toLowerCase()
     if (!keyword) return normalizedTodos
@@ -97,6 +110,10 @@ export function MainPage() {
     }
   }
 
+  // =========================================================
+  // 🌟 3. การโหลดข้อมูลครั้งแรก (Initial Load)
+  // =========================================================
+  // useEffect จะถูกเรียกเพียงครั้งเดียวตอนที่หน้าเว็บถูกเปิดขึ้นมา เพื่อไปดึงข้อมูลจาก Backend
   useEffect(() => {
     loadActivities()
   }, [])
@@ -108,11 +125,24 @@ export function MainPage() {
     }
 
     try {
-      await api.post('/api/activities', {
+      const res = await api.post('/api/activities', {
         name: newTaskName.trim(),
         when: toLocalApiDateTime(newTaskWhen),
       })
-      await loadActivities()
+      // =========================================================
+      // 🌟 4. อัปเดตข้อมูลบนหน้าจอทันที (Direct State Mutation)
+      // =========================================================
+      // หลังจากยิง API สำเร็จ เรานำข้อมูลใหม่ต่อท้าย Array เดิมและสั่งจัดเรียงใหม่ทันที
+      // วิธีนี้ทำให้ "หน้าจอไม่กระตุก" และ "ไม่ต้องยิง API ดึงข้อมูลซ้ำ"
+      setTodos((prev) => {
+        const newData = {
+          id: res.data.id,
+          name: newTaskName.trim(),
+          when: toLocalApiDateTime(newTaskWhen)
+        }
+        const updated = [...prev, newData]
+        return updated.sort((a, b) => new Date(a.when) - new Date(b.when))
+      })
       setNewTaskName('')
       setNewTaskWhen(dayjs())
       toast.success('เพิ่มงานสำเร็จ')
@@ -181,7 +211,7 @@ export function MainPage() {
         name: editTask.title.trim(),
         when: toLocalApiDateTime(editTask.datetime),
       })
-      await loadActivities()
+      setTodos((prev) => prev.map((t) => t.id === editTaskId ? { ...t, name: editTask.title.trim(), when: toLocalApiDateTime(editTask.datetime) } : t).sort((a, b) => new Date(a.when) - new Date(b.when)))
       setIsEditDialogOpen(false)
       setEditTaskId(null)
       toast.success('อัปเดตงานสำเร็จ')
@@ -202,9 +232,6 @@ export function MainPage() {
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 900 }}>
               รายการ To-Do
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              เชื่อมข้อมูลจริงจาก API: เพิ่ม แก้ไข ลบ และโหลดจากฐานข้อมูล
             </Typography>
           </Box>
 

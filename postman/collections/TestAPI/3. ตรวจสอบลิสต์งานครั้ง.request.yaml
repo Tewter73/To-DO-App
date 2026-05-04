@@ -1,9 +1,0 @@
-$kind: http-request
-name: 3. ตรวจสอบลิสต์งานครั้งแรก
-url: http://localhost:5555/api/activities
-method: GET
-auth:
-  type: bearer
-  credentials:
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEzIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NzUxMzM4OTUsIm5iZiI6MTc3NTEzMzg5NSwiZXhwIjoxNzc1MTQ0Njk1LCJpc3MiOiJUb2RvQmFja2VuZCIsImF1ZCI6IlRvZG9CYWNrZW5kIn0.YO3O4x65m51C7BCC2D4p7yWeQfLk_5XZQQQlgPs41UY
-order: 3256834966445713

@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store'
 import Constants from 'expo-constants'
 
 const getApiBaseUrl = () => {
-  // 🌟 บังคับใช้ IP Address แทน localhost ตาม Requirement ของอาจารย์
+  // 🌟 บังคับใช้ IP Address แทน 127.0.0.1 ตาม Requirement ของอาจารย์
   // ให้ตั้งค่าผ่าน EXPO_PUBLIC_API_BASE_URL ในไฟล์ .env หรือจะแก้บรรทัด fallback ด้านล่างตรงๆ ก็ได้
   if (process.env.EXPO_PUBLIC_API_BASE_URL) {
     return process.env.EXPO_PUBLIC_API_BASE_URL
@@ -20,6 +20,11 @@ const api = axios.create({
   timeout: 15000,
 })
 
+// =========================================================
+// 🌟 การจัดการ Token แบบอัตโนมัติ (Axios Interceptor)
+// =========================================================
+// ทุกครั้งที่จะยิง API ตัว Interceptor นี้จะไปงัดเอา Token ที่เก็บไว้อย่างปลอดภัยใน SecureStore 
+// มายัดใส่ Headers (Authorization: Bearer ...) ให้เองโดยที่เราไม่ต้องเขียนส่งใหม่ทุกหน้า
 api.interceptors.request.use(
   async (config) => {
     const token = await SecureStore.getItemAsync('token')

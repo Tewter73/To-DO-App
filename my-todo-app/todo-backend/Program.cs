@@ -15,17 +15,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// CORS: อนุญาตให้เบราว์เซอร์จากต้นทางอื่นเรียก API ได้ (เช่น React บน localhost คนละพอร์ต)
-// ในโปรดักชันอาจต้องจำกัด Origin ให้เฉพาะโดเมนที่อนุญาต
+// =========================================================
+// 🌟 1. การตั้งค่า CORS (Cross-Origin Resource Sharing)
+// =========================================================
+// อนุญาตให้ Frontend (Web) ที่รันคนละ Port/Domain สามารถยิง API เข้ามาได้
+// AllowAnyOrigin = รับจากทุก IP/Domain, AllowAnyMethod = รับทุก Http Method (GET, POST, etc.)
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        // สำหรับ requirement เทอมโปรเจกต์: เปิด CORS ทุก origin/method/header
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -44,19 +45,26 @@ if (string.IsNullOrWhiteSpace(jwtKey))
 }
 
 // การยืนยันตัวตนแบบ Bearer: คำขอที่ส่ง Authorization: Bearer <token> จะถูกตรวจลายเซ็นและอายุ token
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// =========================================================
+// 🌟 2. การตั้งค่า JWT Authentication
+// =========================================================
+// ตั้งค่าระบบรักษาความปลอดภัยให้ตรวจสอบความถูกต้องของ Token ก่อนให้เข้าใช้งาน API
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            // เปิดการตรวจสอบผู้สร้าง (Issuer), ผู้รับ (Audience), เวลาหมดอายุ และลายเซ็น (Signature)
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            
+            // อ่านค่าจาก appsettings.json ซึ่งกำหนดไว้คือ ToDo และ public
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
             // ไม่เผื่อเวลา skew มากเกินไป เพื่อความเข้มงวดต่อเวลาหมดอายุของ token
             ClockSkew = TimeSpan.Zero
         };

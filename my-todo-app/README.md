@@ -1,56 +1,85 @@
-# My To-Do App Workspace
+# To-Do Application (Final Project)
 
-โฟลเดอร์รวมงานทั้งหมดของระบบ To-Do (DB + Backend + Web + Mobile)
+โปรเจกต์นี้เป็นแอปพลิเคชันจัดการสิ่งที่ต้องทำ (To-Do List) แบบครบวงจร (Full-stack) ที่ประกอบด้วย Database, Backend API, Web App (React) และ Mobile App (React Native/Expo)
 
-## โฟลเดอร์ย่อย
+## 🏗 โครงสร้างของระบบ (Architecture)
 
-- `database/` สคริปต์ฐานข้อมูลเริ่มต้น
-- `todo-backend/` ASP.NET Core Web API
-- `todo-web/` React Web App
-- `todo-mobile/` React Native Mobile App (Expo)
+โปรเจกต์ถูกแบ่งออกเป็น 4 ส่วนหลักเพื่อให้แต่ละส่วนทำงานแยกกัน (Decoupled) แต่สื่อสารกันได้อย่างสมบูรณ์:
 
-## ลำดับรันระบบบนเครื่อง Local
+1. **`database/` (MariaDB):** เก็บข้อมูลผู้ใช้งาน (User) และกิจกรรม (Activity) โดยรหัสผ่านจะถูกเข้ารหัสแบบ Hashed + Salt เพื่อความปลอดภัย
+2. **`todo-backend/` (.NET 8 Web API):** ทำหน้าที่เป็นศูนย์กลางประมวลผล (Business Logic) ตรวจสอบความถูกต้องของข้อมูล (Validation) และสร้าง JWT Token สำหรับตรวจสอบสิทธิ์ผู้ใช้
+3. **`todo-web/` (React + Vite):** เว็บแอปพลิเคชันที่ใช้งานบนเบราว์เซอร์ ใช้ Material-UI (MUI) ในการตกแต่งหน้าตา และใช้ React Router ในการจัดการหน้าจอ มีการจัดการ State เพื่อให้ UI อัปเดตทันทีโดยไม่ต้องโหลดหน้าเว็บใหม่
+4. **`todo-mobile/` (React Native + Expo):** แอปพลิเคชันบนมือถือที่เขียนด้วย Expo สื่อสารกับ Backend ผ่าน IP Address และเก็บ Token ไว้ในระบบเข้ารหัสของเครื่อง (`expo-secure-store`)
 
-1. Import SQL จาก `database/todo_db_init.sql`
-2. รัน backend (`todo-backend`) ที่ `http://0.0.0.0:5555`
-3. รัน web (`todo-web`) และทดสอบหน้า `/login`, `/main`, `/credit`
-4. รัน mobile (`todo-mobile`) ผ่าน Expo Go มือถือจริง และตั้ง `src/api.js` เป็น IP เครื่อง backend
+## 🚀 เครื่องมือที่ต้องเตรียม (Prerequisites)
 
-## Team Workflow แนะนำ
+- **Database:** MariaDB (ต้องตั้งค่า `lower_case_table_names=2` ใน my.ini หากใช้ Windows)
+- **Backend:** .NET 8 SDK
+- **Frontend/Mobile:** Node.js (LTS version)
+- **Mobile Testing:** แอป Expo Go บนโทรศัพท์มือถือ (ทั้งมือถือและคอมพิวเตอร์ต้องต่อ Wi-Fi/LAN วงเดียวกัน)
 
-- ห้ามทำงานตรงบน `main`
-- ให้แตก branch ต่อหัวข้อ
-- เปิด PR พร้อม checklist ทดสอบก่อน merge
+## ⚙️ ขั้นตอนการรันระบบ (Quick Start)
 
-ตัวอย่าง:
+สามารถคัดลอกคำสั่งด้านล่างไปรันใน Terminal ตามลำดับได้เลย:
 
+### 1. นำเข้า Database
+เปิดโปรแกรมจัดการฐานข้อมูล (เช่น HeidiSQL) แล้วรันสคริปต์ SQL ที่อยู่ในไฟล์ `database/todo_db_init.sql`
+
+### 2. รัน Backend API (.NET)
 ```bash
-git checkout main
-git pull
-git checkout -b feat/mobile-credit-polish
+cd my-todo-app/todo-backend
+dotnet run
 ```
+> ระบบจะรันขึ้นมาที่ `http://localhost:5555` และ `http://0.0.0.0:5555` อัตโนมัติ (พร้อมรับ Connection จากมือถือ)
 
-## Prompt Template สำหรับเพื่อนใช้กับ AI IDE
+### 3. รัน Web App (React)
+เปิด Terminal ใหม่แล้วรัน:
+```bash
+cd my-todo-app/todo-web
+npm run dev
+```
+> สามารถเปิดเว็บเบราว์เซอร์ทดสอบได้ที่ `http://localhost:5173`
 
-คัดลอก prompt นี้ไปสั่ง AI IDE ในโปรเจกต์:
+### 4. รัน Mobile App (Expo)
+เปิด Terminal ใหม่แล้วรัน:
+```bash
+cd my-todo-app/todo-mobile
+npx expo start
+```
+> จากนั้นนำมือถือเปิดแอป Expo Go แล้วสแกน QR Code เพื่อทดสอบแอป (อย่าลืมตรวจสอบว่าไฟล์ `src/api.js` ใช้ IP Address ของคอมพิวเตอร์อยู่)
+
+---
+
+## 🤝 การโคลนโปรเจกต์ไปทำต่อ (Clone & Continue Guide)
+
+สำหรับเพื่อนในทีมหรือผู้ที่ต้องการนำโปรเจกต์ไปพัฒนาต่อ ให้ทำตามขั้นตอนดังนี้:
+
+1. โคลนโปรเจกต์ลงเครื่อง
+   ```bash
+   git clone <REPOSITORY_URL>
+   cd my-todo-app
+   ```
+2. โหลด Dependencies ให้ฝั่ง Web และ Mobile
+   ```bash
+   cd todo-web && npm install
+   cd ../todo-mobile && npm install
+   ```
+3. นำเข้า Database และทำตามขั้นตอน "การรันระบบ" ด้านบน
+
+---
+
+## 🤖 AI IDE Prompts (สำหรับกู้คืนไฟล์ Environment)
+
+ในกรณีที่คุณใช้ AI IDE (เช่น Cursor, Windsurf) และพบว่าโปรเจกต์รันไม่ได้เพราะขาดไฟล์ที่ถูก Ignore ไว้ (เช่น `.env` หรือตั้งค่าบางอย่างไม่สมบูรณ์) ให้คัดลอก Prompt ด้านล่างนี้ไปสั่ง AI เพื่อให้มันกู้คืนโครงสร้างให้พร้อมรันทันที:
 
 ```text
-You are my coding assistant in this repository.
-Goal: make this project runnable end-to-end on my local machine (database, backend, web, mobile).
+You are my expert full-stack coding assistant. 
+I have just cloned this To-Do application project, but it is missing environment files and specific configurations that were excluded from Git. 
+Please scan the code in `todo-backend`, `todo-web`, and `todo-mobile` and help me reconstruct the environment so I can run it end-to-end on Windows.
 
-Please do the following:
-1) Inspect README files in root, my-todo-app, database, todo-backend, todo-web, todo-mobile.
-2) Verify environment setup for Windows: .NET 8 SDK, Node.js LTS, Git, MariaDB.
-3) Verify API URL in todo-mobile/src/api.js uses my LAN IP (not localhost).
-4) Run/install commands safely:
-   - todo-web: npm install, npm run test:unit, npm run test:e2e, npm run build
-   - todo-mobile: npm install, npm test -- --runInBand
-   - todo-backend: dotnet restore, dotnet build
-5) Report all failures with exact fix steps.
-6) Do not commit anything automatically. Ask before commit.
-
-Return:
-- A checklist of what passed/failed
-- Exact commands I should run next
-- Any files that need manual edits (with reasons)
+Specifically:
+1. Provide the exact structure for `appsettings.json` in `todo-backend` (Must include JWT ValidIssuer="ToDo" and ValidAudience="public", and MariaDB connection string).
+2. Check `todo-web/.env` if needed for VITE_API_BASE_URL.
+3. Show me how to find my IPv4 address on Windows and how to apply it in `todo-mobile/src/api.js` or `todo-mobile/.env` (EXPO_PUBLIC_API_BASE_URL) so Expo Go can connect to the backend.
+4. Verify all package dependencies are installed and suggest the exact commands to start the DB, Backend, Web, and Mobile simultaneously.
 ```

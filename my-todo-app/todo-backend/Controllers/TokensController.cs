@@ -41,10 +41,12 @@ public sealed class TokensController : ControllerBase
             return Unauthorized();
         }
 
-        // ขั้นตอนตรวจรหัสผ่าน:
-        // 1) แปลง salt และแฮชที่เก็บจาก Base64 — หากข้อมูลในฐานเสียหายหรือไม่ใช่ Base64 ที่ถูกต้อง ปฏิเสธ
-        // 2) คำนวณแฮชจากรหัสผ่านที่ส่งมา ด้วยพารามิเตอร์เดียวกับตอนลงทะเบียน
-        // 3) เปรียบเทียบด้วย FixedTimeEquals — ลดความเสี่ยง timing attack
+        // =========================================================
+        // 🌟 1. การตรวจสอบรหัสผ่าน (Password Hashing & Verification)
+        // =========================================================
+        // อ่านค่า Salt ออกมาจาก Database เพื่อนำมาผสมกับรหัสผ่านที่พิมพ์เข้ามา
+        // จากนั้นทำการ Hash 100,000 รอบด้วย HMACSHA256 (PBKDF2) เพื่อความปลอดภัยสูงสุด
+        // สุดท้ายเทียบผลลัพธ์ด้วย FixedTimeEquals เพื่อป้องกันการโดนแฮ็กแบบ Timing Attack
         byte[] saltBytes;
         try
         {
@@ -88,7 +90,11 @@ public sealed class TokensController : ControllerBase
         var expires = DateTime.UtcNow.AddHours(3);
         var nowUtc = DateTime.UtcNow;
 
-        // หมายเหตุ: ใช้ `unique_name` สำหรับ user id เพื่อให้เข้ากับข้อกำหนด claim ใหม่
+        // =========================================================
+        // 🌟 2. การสร้าง JWT Token (Payload Claims)
+        // =========================================================
+        // ฝังข้อมูลสำคัญลงใน Token เช่น UserId (แปลงเป็นสตริง) และกำหนดสิทธิ์ (Role) เป็น "user"
+        // ข้อมูลนี้จะถูกดึงออกมาใช้งานใน ActivitiesController เพื่อกรองข้อมูลเฉพาะของคนนั้นๆ
         var issuedAtUnixSeconds = new DateTimeOffset(nowUtc).ToUnixTimeSeconds();
         var claims = new[]
         {
