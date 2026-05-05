@@ -15,6 +15,7 @@ import {
   Paragraph,
   Portal,
   Searchbar,
+  Snackbar,
   Text,
   TextInput,
   Title,
@@ -58,6 +59,14 @@ export default function MainScreen({ firstName }) {
   const [showEditTimePicker, setShowEditTimePicker] = useState(false)
   const createNameError = validateActivityName(createName)
   const editNameError = validateActivityName(editName)
+  
+  const [snackbarVisible, setSnackbarVisible] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+
+  const showMessage = (msg) => {
+    setSnackbarMessage(msg)
+    setSnackbarVisible(true)
+  }
 
   const [kbHeight, setKbHeight] = useState(0)
 
@@ -158,6 +167,7 @@ export default function MainScreen({ firstName }) {
       setCreateWhen(new Date())
       setShowCreateDatePicker(false)
       setShowCreateTimePicker(false)
+      showMessage('เพิ่มงานใหม่เรียบร้อยแล้ว')
     } catch (error) {
       Alert.alert('Error', 'ไม่สามารถเพิ่มงานได้')
     }
@@ -188,6 +198,7 @@ export default function MainScreen({ firstName }) {
       setEditId(null)
       setShowEditDatePicker(false)
       setShowEditTimePicker(false)
+      showMessage('แก้ไขงานเรียบร้อยแล้ว')
     } catch (error) {
       Alert.alert('Error', 'ไม่สามารถแก้ไขงานได้')
     }
@@ -203,6 +214,7 @@ export default function MainScreen({ firstName }) {
           try {
             await api.delete(`/api/activities/${id}`)
             setActivities((prev) => prev.filter((t) => t.id !== id))
+            showMessage('ลบงานเรียบร้อยแล้ว')
           } catch (error) {
             Alert.alert('Error', 'ไม่สามารถลบงานได้')
           }
@@ -431,6 +443,20 @@ export default function MainScreen({ firstName }) {
           </View>
         </Dialog>
       </Portal>
+
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={2000}
+        style={{ 
+          marginBottom: 80, // ยกขึ้นมาไม่ให้โดนทับ
+          marginHorizontal: 16,
+          borderRadius: 12, 
+          backgroundColor: '#333333' 
+        }}
+      >
+        {snackbarMessage}
+      </Snackbar>
 
       <FAB
         icon="plus"
