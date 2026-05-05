@@ -10,7 +10,7 @@ const getApiBaseUrl = () => {
   }
 
   // Fallback (เผื่อไม่ได้ตั้ง .env) ให้ยิงไป IP แบบ Hardcoded ตามที่อาจารย์ระบุ
-  return 'http://10.22.160.239:5555'
+  return 'http://10.11.150.88:5555'
 }
 
 const API_BASE_URL = getApiBaseUrl()
